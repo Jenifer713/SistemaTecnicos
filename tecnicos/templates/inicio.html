@@ -1,11 +1,166 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Sistema Técnicos</title>
-</head>
-<body>
-    <h1>Hola Jeniffer 👋</h1>
-    <p>Sistema Técnico en Django funcionando con templates</p>
-</body>
-</html>
+{% extends 'plantillaPrincipal.html' %}
+{% load static %}
+
+{% block contenido %}
+<!--? slider Area Start-->
+<section class="slider-area" id="inicio">
+    <div class="slider-active">
+        <div class="single-slider slider-height d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-7 col-md-12">
+                        <div class="hero__caption">
+                            <h1 data-animation="fadeInLeft" data-delay="0.2s">Sistema de gestión<br> para técnicos</h1>
+                            <p data-animation="fadeInLeft" data-delay="0.4s">Organiza equipos, asigna servicios y mantén el seguimiento de cada orden de trabajo desde una sola plataforma.</p>
+                            <a href="#servicios" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.7s">Comenzar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ? services-area -->
+<div class="services-area" id="servicios">
+    <div class="container">
+        <div class="row justify-content-sm-center">
+            <div class="col-lg-4 col-md-6 col-sm-8">
+                <div class="single-services mb-30">
+                    <div class="features-icon">
+                        <img src="{% static 'assets/img/icon/icon1.svg' %}" alt="">
+                    </div>
+                    <div class="features-caption">
+                        <h3>Gestión de técnicos</h3>
+                        <p>Administra perfiles, especialidades, disponibilidad y asignaciones en un solo panel.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+                <div class="single-services mb-30">
+                    <div class="features-icon">
+                        <img src="{% static 'assets/img/icon/icon2.svg' %}" alt="">
+                    </div>
+                    <div class="features-caption">
+                        <h3>Asignación inteligente</h3>
+                        <p>Distribuye tareas por ubicación, prioridad y habilidades para optimizar el trabajo.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+                <div class="single-services mb-30">
+                    <div class="features-icon">
+                        <img src="{% static 'assets/img/icon/icon3.svg' %}" alt="">
+                    </div>
+                    <div class="features-caption">
+                        <h3>Seguimiento en tiempo real</h3>
+                        <p>Consulta el progreso de cada servicio y mantén informado al cliente con actualizaciones automáticas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Courses area start -->
+<div class="courses-area section-padding40 fix" id="tecnicos">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-7 col-lg-8">
+                <div class="section-tittle text-center mb-55">
+                    <h2>Servicios destacados</h2>
+                </div>
+            </div>
+        </div>
+        <div class="courses-actives">
+            <div class="properties pb-20">
+                <div class="properties__card">
+                    <div class="properties__img overlay1">
+                        <a href="#"><img src="{% static 'assets/img/gallery/featured1.png' %}" alt=""></a>
+                    </div>
+                    <div class="properties__caption">
+                        <p>Mantenimiento</p>
+                        <h3><a href="#">Mantenimiento preventivo</a></h3>
+                        <p>Inspecciones periódicas y revisión de equipos para evitar fallas y prolongar su vida útil.</p>
+                        <a href="#" class="border-btn border-btn2">Ver más</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="properties pb-20">
+                <div class="properties__card">
+                    <div class="properties__img overlay1">
+                        <a href="#"><img src="{% static 'assets/img/gallery/featured2.png' %}" alt=""></a>
+                    </div>
+                    <div class="properties__caption">
+                        <p>Instalaciones</p>
+                        <h3><a href="#">Instalación eléctrica</a></h3>
+                        <p>Montaje y configuración de sistemas eléctricos, paneles y equipos de soporte para nuevos espacios.</p>
+                        <a href="#" class="border-btn border-btn2">Ver más</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="properties pb-20">
+                <div class="properties__card">
+                    <div class="properties__img overlay1">
+                        <a href="#"><img src="{% static 'assets/img/gallery/featured3.png' %}" alt=""></a>
+                    </div>
+                    <div class="properties__caption">
+                        <p>Soporte</p>
+                        <h3><a href="#">Soporte técnico especializado</a></h3>
+                        <p>Atención rápida para incidentes críticos, diagnóstico técnico y solución de fallas operativas.</p>
+                        <a href="#" class="border-btn border-btn2">Ver más</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--? About Area-1 Start -->
+<section class="about-area1 fix pt-10" id="contacto">
+    <div class="support-wrapper align-items-center">
+        <div class="left-content1">
+            <div class="about-icon">
+                <img src="{% static 'assets/img/icon/about.svg' %}" alt="">
+            </div>
+            <div class="section-tittle section-tittle2 mb-55">
+                <div class="front-text">
+                    <h2 class="">Controla tu operación técnica con confianza</h2>
+                    <p>Coordina técnicos, revisa órdenes de servicio y da seguimiento a cada actividad con una visión completa del estado del trabajo.</p>
+                </div>
+            </div>
+            <div class="single-features">
+                <div class="features-icon">
+                    <img src="{% static 'assets/img/icon/right-icon.svg' %}" alt="">
+                </div>
+                <div class="features-caption">
+                    <p>Planifica tareas y mantiene un historial completo de cada servicio realizado.</p>
+                </div>
+            </div>
+            <div class="single-features">
+                <div class="features-icon">
+                    <img src="{% static 'assets/img/icon/right-icon.svg' %}" alt="">
+                </div>
+                <div class="features-caption">
+                    <p>Optimiza la asignación de técnicos según ubicación, urgencia y especialidad.</p>
+                </div>
+            </div>
+            <div class="single-features">
+                <div class="features-icon">
+                    <img src="{% static 'assets/img/icon/right-icon.svg' %}" alt="">
+                </div>
+                <div class="features-caption">
+                    <p>Mejora la comunicación con clientes y supervisa el cumplimiento de cada servicio.</p>
+                </div>
+            </div>
+        </div>
+        <div class="right-content1">
+            <div class="right-img">
+                <img src="{% static 'assets/img/gallery/about2.png' %}" alt="">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

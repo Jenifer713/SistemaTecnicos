@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Sistema Técnicos</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/img/favicon.ico' %}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/slicknav.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/progressbar_barfiller.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/gijgo.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animated-headline.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+</head>
+
+<body>
+
+<!-- ================= PRELOADER ================= -->
+<div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="preloader-circle"></div>
+            <div class="preloader-img pere-text">
+                <img src="{% static 'assets/img/logo/loder.png' %}" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<header>
+    <div class="header-area header-transparent">
+        <div class="main-header">
+            <div class="header-bottom header-sticky">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+
+                        <div class="col-xl-2 col-lg-2">
+                            <div class="logo">
+                                <a href="/"><img src="{% static 'assets/img/logo/logo.png' %}" alt="Sistema Técnicos"></a>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-10 col-lg-10">
+                            <div class="menu-wrapper d-flex justify-content-end">
+
+                                <nav class="main-menu d-none d-lg-block">
+                                    <ul id="navigation">
+                                        <li class="active"><a href="/">Inicio</a></li>
+                                        <li><a href="#tecnicos">Técnicos</a></li>
+                                        <li><a href="#servicios">Servicios</a></li>
+                                        <li><a href="#contacto">Contacto</a></li>
+
+                                        <li class="button-header margin-left">
+                                            <a href="#" class="btn">Registro</a>
+                                        </li>
+                                        <li class="button-header">
+                                            <a href="#" class="btn btn3">Iniciar sesión</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ================= CONTENIDO DINÁMICO ================= -->
+<main>
+    {% block contenido %}
+    {% endblock %}
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+    <div class="footer-wrappper footer-bg">
+
+        <div class="footer-area footer-padding">
+            <div class="container">
+                <div class="row justify-content-between">
+
+                    <div class="col-xl-4 col-lg-5 col-md-4 col-sm-6">
+                        <div class="footer-logo mb-25">
+                            <img src="{% static 'assets/img/logo/logo2_footer.png' %}" alt="">
+                        </div>
+                        <p>Sistema de gestión de técnicos en Django.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom-area text-center">
+            <p>© {% now "Y" %} Sistema Técnicos</p>
+        </div>
+
+    </div>
+</footer>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="{% static 'assets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+<script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+
+<script src="{% static 'assets/js/jquery.slicknav.min.js' %}"></script>
+<script src="{% static 'assets/js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'assets/js/slick.min.js' %}"></script>
+<script src="{% static 'assets/js/wow.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.magnific-popup.js' %}"></script>
+
+<script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+</html>
