@@ -1,0 +1,77 @@
+{% extends 'plantillaPrincipal.html' %}
+{% load static %}
+
+{% block contenido %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <br>
+            <h1><b>Iniciar Sesión</b></h1>
+            <hr>
+
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                Usuario o contraseña incorrectos. Intenta de nuevo.
+            </div>
+            {% endif %}
+
+            <form id="form_login" action="/login/" method="post">
+                {% csrf_token %}
+
+                <b>Usuario:</b> <br>
+                <input placeholder="Ingrese su usuario" class="form-control"
+                       type="text" name="username">
+                <br>
+
+                <b>Contraseña:</b> <br>
+                <input placeholder="Ingrese su contraseña" class="form-control"
+                       type="password" name="password">
+                <br><br>
+
+                <button class="btn btn-success" type="submit">
+                    <i class="ti-unlock mr-1"></i> Ingresar
+                </button>
+                <a href="/registro/" class="btn btn-secondary">
+                    <i class="ti-user mr-1"></i> Registrarme
+                </a>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+    $("#form_login").validate({
+        errorElement: "span",
+        errorClass: "text-danger small",
+        highlight: function (element) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        },
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        },
+        rules: {
+            username: { required: true, minlength: 3 },
+            password: { required: true, minlength: 4 }
+        },
+        messages: {
+            username: {
+                required: "Por favor, ingrese su usuario",
+                minlength: "El usuario debe tener al menos 3 caracteres"
+            },
+            password: {
+                required: "Por favor, ingrese su contraseña",
+                minlength: "La contraseña debe tener al menos 4 caracteres"
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

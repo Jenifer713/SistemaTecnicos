@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Reporte de Participaciones</title>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h2 { color: #4255A4; text-align: center; }
+        table { width: 100%; font-size: 13px; }
+        thead { background: #4255A4; color: #fff; }
+        .badge-success { background:#28a745; color:#fff; padding:2px 8px; border-radius:4px; }
+        .badge-danger  { background:#dc3545; color:#fff; padding:2px 8px; border-radius:4px; }
+        .badge-info    { background:#17a2b8; color:#fff; padding:2px 8px; border-radius:4px; }
+        @media print {
+            button { display: none; }
+            @page { margin: 1cm; }
+        }
+    </style>
+</head>
+<body>
+
+<center>
+    <h2>REPORTE DE PARTICIPACIONES</h2>
+    <p style="color:#888;">Sistema de Gestión de Técnicos en Tecnología</p>
+    <hr>
+</center>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Técnico</th>
+            <th>Cédula</th>
+            <th>Curso</th>
+            <th>Fecha Inscripción</th>
+            <th>Nota</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in participaciones %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.tecnico.nombre_completo }}</td>
+            <td>{{ p.tecnico.cedula }}</td>
+            <td>{{ p.curso.nombre }}</td>
+            <td>{{ p.fecha_inscripcion }}</td>
+            <td>{{ p.nota_final|default:"—" }}</td>
+            <td>
+                {% if p.estado == 'Aprobado' %}
+                    <span class="badge-success">Aprobado</span>
+                {% elif p.estado == 'Reprobado' %}
+                    <span class="badge-danger">Reprobado</span>
+                {% else %}
+                    <span class="badge-info">{{ p.estado }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<center>
+    <p>Total de participaciones: <strong>{{ participaciones|length }}</strong></p>
+    <hr style="width:300px;">
+    <p>........................................</p>
+    <p><strong>Firma de Responsabilidad</strong></p>
+    <p><strong>Administrador del Sistema</strong></p>
+</center>
+
+<center>
+    <br>
+    <button onclick="window.print();" class="btn btn-success mr-2">Imprimir</button>
+    <button onclick="window.close();" class="btn btn-secondary">Cerrar</button>
+</center>
+
+<script>window.print();</script>
+
+</body>
+</html>

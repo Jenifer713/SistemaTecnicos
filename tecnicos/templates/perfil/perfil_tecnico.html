@@ -1,0 +1,147 @@
+{% extends 'plantillaPrincipal.html' %}
+{% load static %}
+
+{% block contenido %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <br>
+            <h1><b>Actualizar Mi Perfil</b></h1>
+            <hr>
+
+            <form enctype="multipart/form-data" id="form_editar_perfil"
+                  action="/perfil/" method="post">
+                {% csrf_token %}
+
+                <b>Nombres:</b> <br>
+                <input class="form-control" type="text"
+                       value="{{ tecnico.nombres }}" readonly
+                       style="background:#f8f8f8;">
+                <br>
+
+                <b>Apellidos:</b> <br>
+                <input class="form-control" type="text"
+                       value="{{ tecnico.apellidos }}" readonly
+                       style="background:#f8f8f8;">
+                <br>
+
+                <b>Cédula:</b> <br>
+                <input class="form-control" type="text"
+                       value="{{ tecnico.cedula }}" readonly
+                       style="background:#f8f8f8;">
+                <br>
+
+                <b>Correo:</b> <br>
+                <input class="form-control" type="text"
+                       value="{{ tecnico.correo }}" readonly
+                       style="background:#f8f8f8;">
+                <br>
+
+                <b>Especialidad:</b> <br>
+                <input class="form-control" type="text"
+                       value="{{ tecnico.especialidad }}" readonly
+                       style="background:#f8f8f8;">
+                <br>
+
+                <hr>
+                <small class="text-muted">Los campos anteriores solo puede modificarlos el Administrador.</small>
+                <hr>
+                <br>
+
+                <b>Teléfono:</b> <br>
+                <input placeholder="Ingrese su teléfono (10 dígitos)"
+                       class="form-control" type="text"
+                       name="telefono" id="telefono"
+                       value="{{ tecnico.telefono }}"
+                       maxlength="10">
+                <br>
+
+                <b>Institución:</b> <br>
+                <input placeholder="Ingrese el nombre de su institución"
+                       class="form-control" type="text"
+                       name="institucion" id="institucion"
+                       value="{{ tecnico.institucion }}">
+                <br>
+
+                <b>Ciudad:</b> <br>
+                <input placeholder="Ingrese su ciudad"
+                       class="form-control" type="text"
+                       name="ciudad" id="ciudad"
+                       value="{{ tecnico.ciudad }}">
+                <br>
+
+                <b>Fotografía:</b><br>
+                <input type="file" name="foto" id="foto" class="form-control"
+                       accept=".jpg,.jpeg,.png"
+                       {% if tecnico.foto %}
+                       data-initial-preview="<img src='{{ tecnico.foto.url }}' class='file-preview-image'>"
+                       data-initial-preview-config='[{"caption": "foto_perfil", "showDelete": false}]'
+                       {% endif %}>
+                {% if tecnico.foto %}
+                    <small class="text-muted">
+                        Foto actual:
+                        <a href="{{ tecnico.foto.url }}" target="_blank">
+                            <img src="{{ tecnico.foto.url }}"
+                                 style="height:35px; width:35px; border-radius:50%; margin-left:5px; vertical-align:middle;">
+                            ver imagen
+                        </a>
+                    </small>
+                {% endif %}
+                <br><br>
+
+                <button class="btn btn-success" type="submit">
+                    <i class="ti-save mr-1"></i> Actualizar
+                </button>
+                <a href="/dashboard/" class="btn btn-secondary">
+                    <i class="ti-close mr-1"></i> Cancelar
+                </a>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$("#form_editar_perfil").validate({
+    rules: {
+        telefono: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 10
+        },
+        institucion: {
+            required: true,
+            minlength: 3,
+            maxlength: 150
+        },
+        ciudad: {
+            required: true,
+            minlength: 2,
+            maxlength: 100
+        }
+    },
+    messages: {
+        telefono: {
+            required: "Por favor, ingrese su teléfono",
+            digits: "Solo se permiten números",
+            minlength: "El teléfono debe tener exactamente 10 dígitos",
+            maxlength: "El teléfono debe tener exactamente 10 dígitos"
+        },
+        institucion: {
+            required: "Por favor, ingrese el nombre de su institución",
+            minlength: "La institución debe tener al menos 3 caracteres",
+            maxlength: "La institución no puede exceder 150 caracteres"
+        },
+        ciudad: {
+            required: "Por favor, ingrese su ciudad",
+            minlength: "La ciudad debe tener al menos 2 caracteres",
+            maxlength: "La ciudad no puede exceder 100 caracteres"
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Sistema Técnicos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/img/favicon.ico' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/slicknav.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/progressbar_barfiller.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/gijgo.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animated-headline.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/sweetalert2.min.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="preloader-circle"></div>
+            <div class="preloader-img pere-text">
+                <img src="{% static 'assets/img/logo/loder.png' %}" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     NAVBAR — cambia según el rol
+═══════════════════════════════════════════ -->
+<header>
+    <div class="header-area header-transparent">
+        <div class="main-header">
+            <div class="header-bottom header-sticky">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+
+                        <!-- Logo -->
+                        <div class="col-xl-2 col-lg-2">
+                            <div class="logo">
+                                <a href="/"><img src="{% static 'assets/img/logo/logo.png' %}" alt="Sistema Técnicos"></a>
+                            </div>
+                        </div>
+
+                        <!-- Menú -->
+                        <div class="col-xl-10 col-lg-10">
+                            <div class="menu-wrapper d-flex justify-content-end">
+                                <nav class="main-menu d-none d-lg-block">
+                                    <ul id="navigation">
+
+                                        {% if not user.is_authenticated %}
+                                        <!-- ── NAVBAR PÚBLICO ── -->
+                                        <li class="active"><a href="/"><i class="ti-home mr-1"></i> Inicio</a></li>
+                                        <li><a href="/registro/"><i class="ti-user mr-1"></i> Registrar</a></li>
+                                        <li class="button-header margin-left">
+                                            <a href="/login/" class="btn btn3">
+                                                <i class="ti-unlock mr-1"></i> Iniciar Sesión
+                                            </a>
+                                        </li>
+
+                                        {% elif user.is_staff %}
+                                        <!-- ── NAVBAR ADMINISTRADOR ── -->
+                                        <li><a href="/dashboard/"><i class="ti-dashboard mr-1"></i> Dashboard</a></li>
+                                        <li><a href="/tecnicos/"><i class="ti-id-badge mr-1"></i> Técnicos</a></li>
+                                        <li><a href="/cursos/"><i class="ti-book mr-1"></i> Cursos</a></li>
+                                        <li><a href="/participaciones/"><i class="ti-clipboard mr-1"></i> Participaciones</a></li>
+                                        <li><a href="/participaciones/?estado=Aprobado"><i class="ti-write mr-1"></i> Certificados</a></li>
+                                        <li class="button-header margin-left">
+                                            <a href="/logout/" class="btn btn3">
+                                                <i class="ti-power-off mr-1"></i> Salir
+                                            </a>
+                                        </li>
+
+                                        {% else %}
+                                        <!-- ── NAVBAR TÉCNICO ── -->
+                                        <li><a href="/dashboard/"><i class="ti-dashboard mr-1"></i> Inicio</a></li>
+                                        <li><a href="/perfil/"><i class="ti-user mr-1"></i> Mi Perfil</a></li>
+                                        <li><a href="/dashboard/"><i class="ti-clipboard mr-1"></i> Mis Cursos</a></li>
+                                        <li><a href="/cursos-disponibles/"><i class="ti-plus mr-1"></i> Cursos a Inscribir</a></li>
+                                        <li class="button-header margin-left">
+                                            <a href="/logout/" class="btn btn3">
+                                                <i class="ti-power-off mr-1"></i> Salir
+                                            </a>
+                                        </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- CONTENIDO -->
+<main style="{% block main_style %}padding-top: 100px;{% endblock %}">
+
+    <!-- Botón Volver global (se muestra en todas las páginas excepto inicio, login y dashboard) -->
+    {% if user.is_authenticated and request.path != '/' and request.path != '/login/' and request.path != '/dashboard/' %}
+    <div style="padding: 8px 20px 0 20px;">
+        <a href="javascript:history.back()" class="btn btn-secondary btn-sm">
+            <i class="ti-arrow-left mr-1"></i> Volver
+        </a>
+    </div>
+    {% endif %}
+
+    {% block contenido %}
+    {% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-wrappper footer-bg">
+        <div class="footer-area footer-padding">
+            <div class="container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <div class="footer-logo mb-25">
+                            <img src="{% static 'assets/img/logo/logo2_footer.png' %}" alt="">
+                        </div>
+                        <p>Sistema de gestión de técnicos en tecnología.</p>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 text-right">
+                        {% if user.is_authenticated %}
+                        <p class="text-white-50 mb-1">
+                            <i class="ti-user mr-1"></i>
+                            <strong class="text-white">{{ user.username }}</strong>
+                            {% if user.is_staff %}
+                                <span class="badge badge-warning ml-2">Administrador</span>
+                            {% else %}
+                                <span class="badge badge-info ml-2">Técnico</span>
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom-area text-center">
+            <p>© {% now "Y" %} Sistema Técnicos</p>
+        </div>
+    </div>
+</footer>
+
+<!-- SCRIPTS BASE -->
+<script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+<script src="{% static 'assets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.slicknav.min.js' %}"></script>
+<script src="{% static 'assets/js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'assets/js/slick.min.js' %}"></script>
+<script src="{% static 'assets/js/wow.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.magnific-popup.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
+<script src="{% static 'assets/js/jquery.validate.min.js' %}"></script>
+<script src="{% static 'assets/js/sweetalert2.all.min.js' %}"></script>
+
+<script>
+function confirmarEliminacion(event, url) {
+    event.preventDefault();
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: 'No podrá revertir esta acción',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) { window.location.href = url; }
+    });
+}
+</script>
+
+{% if messages %}
+{% for mensaje in messages %}
+<script>
+Swal.fire({
+    title: 'Confirmación',
+    text: '{{ mensaje }}',
+    icon: 'success',
+    confirmButtonText: 'Aceptar'
+});
+</script>
+{% endfor %}
+{% endif %}
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

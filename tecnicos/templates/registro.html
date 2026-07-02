@@ -1,0 +1,188 @@
+{% extends 'plantillaPrincipal.html' %}
+{% load static %}
+
+{% block contenido %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <br>
+            <h1><b>Registrar Nuevo Técnico</b></h1>
+            <hr>
+
+            <form enctype="multipart/form-data" id="form_nuevo_tecnico"
+                  action="/registro/" method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <b>Cédula:</b> <br>
+                        <input placeholder="10 dígitos" class="form-control"
+                               type="text" name="cedula" maxlength="10"
+                               value="{{ form_data.cedula|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Nombres:</b> <br>
+                        <input placeholder="Ingrese sus nombres" class="form-control"
+                               type="text" name="nombres"
+                               value="{{ form_data.nombres|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Apellidos:</b> <br>
+                        <input placeholder="Ingrese sus apellidos" class="form-control"
+                               type="text" name="apellidos"
+                               value="{{ form_data.apellidos|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Correo electrónico:</b> <br>
+                        <input placeholder="correo@ejemplo.com" class="form-control"
+                               type="email" name="correo"
+                               value="{{ form_data.correo|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Teléfono:</b> <br>
+                        <input placeholder="10 dígitos" class="form-control"
+                               type="text" name="telefono" maxlength="10"
+                               value="{{ form_data.telefono|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Especialidad:</b> <br>
+                        <select class="form-control" name="especialidad">
+                            <option value="">Seleccione...</option>
+                            {% for val, label in especialidades %}
+                                <option value="{{ val }}"
+                                    {% if form_data.especialidad == val %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Institución:</b> <br>
+                        <input placeholder="Nombre de la institución" class="form-control"
+                               type="text" name="institucion"
+                               value="{{ form_data.institucion|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Ciudad:</b> <br>
+                        <input placeholder="Ciudad" class="form-control"
+                               type="text" name="ciudad"
+                               value="{{ form_data.ciudad|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Fecha de ingreso:</b> <br>
+                        <input class="form-control" type="date" name="fecha_ingreso"
+                               value="{{ form_data.fecha_ingreso|default:'' }}">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Foto de perfil (opcional):</b> <br>
+                        <input type="file" name="foto" id="foto" class="form-control"
+                               accept=".jpg,.jpeg,.png">
+                        <br>
+                    </div>
+                </div>
+
+                <hr>
+                <h5><b>Datos de acceso al sistema</b></h5>
+                <br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <b>Usuario (para iniciar sesión):</b> <br>
+                        <input placeholder="Ingrese un nombre de usuario" class="form-control"
+                               type="text" name="username"
+                               value="{{ form_data.username|default:'' }}"
+                               {% if error_username %}style="border-color:#dc3545;"{% endif %}>
+                        {% if error_username %}
+                            <span class="text-danger small">{{ error_username }}</span>
+                        {% endif %}
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Contraseña:</b> <br>
+                        <input placeholder="Mínimo 6 caracteres" class="form-control"
+                               type="password" name="password">
+                        <br>
+                    </div>
+                </div>
+
+                <br>
+                <button class="btn btn-success" type="submit">
+                    <i class="ti-save mr-1"></i> Guardar
+                </button>
+                <a href="/login/" class="btn btn-secondary">
+                    <i class="ti-close mr-1"></i> Cancelar
+                </a>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+    jQuery.validator.addMethod("soloLetras", function (value, element) {
+        return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(value);
+    }, "Este campo solo acepta letras y espacios");
+
+    jQuery.validator.addMethod("soloCedula", function (value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+    }, "La cédula debe tener exactamente 10 dígitos numéricos");
+
+    jQuery.validator.addMethod("soloTelefono", function (value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+    }, "El teléfono debe tener exactamente 10 dígitos");
+
+    $("#form_nuevo_tecnico").validate({
+        errorElement: "span",
+        errorClass: "text-danger small",
+        highlight: function (element) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        },
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        },
+        rules: {
+            cedula:       { required: true, soloCedula: true },
+            nombres:      { required: true, minlength: 2, soloLetras: true },
+            apellidos:    { required: true, minlength: 2, soloLetras: true },
+            correo:       { required: true, email: true },
+            telefono:     { required: true, soloTelefono: true },
+            especialidad: { required: true },
+            institucion:  { required: true, minlength: 3 },
+            ciudad:       { required: true, minlength: 2 },
+            fecha_ingreso:{ required: true },
+            username:     { required: true, minlength: 3, maxlength: 50 },
+            password:     { required: true, minlength: 6 }
+        },
+        messages: {
+            cedula:       { required: "La cédula es obligatoria" },
+            nombres:      { required: "Los nombres son obligatorios", soloLetras: "Solo letras y espacios" },
+            apellidos:    { required: "Los apellidos son obligatorios", soloLetras: "Solo letras y espacios" },
+            correo:       { required: "El correo es obligatorio", email: "Ingrese un correo válido" },
+            telefono:     { required: "El teléfono es obligatorio" },
+            especialidad: { required: "Seleccione una especialidad" },
+            institucion:  { required: "La institución es obligatoria" },
+            ciudad:       { required: "La ciudad es obligatoria" },
+            fecha_ingreso:{ required: "La fecha de ingreso es obligatoria" },
+            username:     { required: "El usuario es obligatorio", minlength: "Mínimo 3 caracteres" },
+            password:     { required: "La contraseña es obligatoria", minlength: "Mínimo 6 caracteres" }
+        }
+    });
+});
+</script>
+{% endblock %}

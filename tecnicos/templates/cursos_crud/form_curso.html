@@ -1,0 +1,144 @@
+{% extends 'plantillaPrincipal.html' %}
+{% load static %}
+
+{% block contenido %}
+<div style="padding:40px 0; background:#f5f7fa; min-height:80vh;">
+<div class="container">
+
+    <center>
+        <br>
+        <h3><b>{% if curso %}Editar Curso{% else %}Nuevo Curso{% endif %}</b></h3>
+        <hr>
+    </center>
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+
+                    <form id="formCurso" method="post"
+                          action="{% if curso %}/cursos/editar/{{ curso.id }}/{% else %}/cursos/nuevo/{% endif %}">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-4 form-group mb-3">
+                                <label><i class="ti-tag"></i> Código *</label>
+                                <input type="text" name="codigo" id="codigo" class="form-control"
+                                       value="{{ curso.codigo|default:'' }}" placeholder="CUR-001">
+                            </div>
+                            <div class="col-md-8 form-group mb-3">
+                                <label><i class="ti-book"></i> Nombre del curso *</label>
+                                <input type="text" name="nombre" id="nombre" class="form-control"
+                                       value="{{ curso.nombre|default:'' }}" placeholder="Nombre del curso">
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label><i class="ti-user"></i> Instructor *</label>
+                                <input type="text" name="instructor" id="instructor" class="form-control"
+                                       value="{{ curso.instructor|default:'' }}" placeholder="Ing. Nombre Apellido">
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label><i class="ti-time"></i> Duración (horas) *</label>
+                                <input type="number" name="duracion" id="duracion" class="form-control"
+                                       value="{{ curso.duracion|default:'' }}" min="1" placeholder="40">
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label><i class="ti-agenda"></i> Cupos *</label>
+                                <input type="number" name="cupos" id="cupos" class="form-control"
+                                       value="{{ curso.cupos|default:'' }}" min="1" placeholder="30">
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label><i class="ti-calendar"></i> Fecha de inicio *</label>
+                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control"
+                                       value="{{ curso.fecha_inicio|default:'' }}">
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label><i class="ti-calendar"></i> Fecha de fin *</label>
+                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control"
+                                       value="{{ curso.fecha_fin|default:'' }}">
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label><i class="ti-desktop"></i> Modalidad *</label>
+                                <select name="modalidad" id="modalidad" class="form-control">
+                                    {% for val, label in modalidades %}
+                                        <option value="{{ val }}"
+                                            {% if curso.modalidad == val %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label><i class="ti-check-box"></i> Estado *</label>
+                                <select name="estado" id="estado" class="form-control">
+                                    <option value="Activo"    {% if curso.estado == 'Activo'    or not curso %}selected{% endif %}>Activo</option>
+                                    <option value="Inactivo"  {% if curso.estado == 'Inactivo'  %}selected{% endif %}>Inactivo</option>
+                                    <option value="Finalizado"{% if curso.estado == 'Finalizado'%}selected{% endif %}>Finalizado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 form-group mb-3">
+                                <label><i class="ti-align-left"></i> Descripción</label>
+                                <textarea name="descripcion" id="descripcion" class="form-control" rows="3"
+                                          placeholder="Descripción del curso (opcional)">{{ curso.descripcion|default:'' }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-success btn-lg mr-2">
+                                <i class="ti-save"></i>
+                                {% if curso %}Actualizar{% else %}Guardar{% endif %}
+                            </button>
+                            <a href="/cursos/" class="btn btn-secondary btn-lg">
+                                <i class="ti-close"></i> Cancelar
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+    $.validator.addMethod('mayorQue', function(value, element, param) {
+        var ini = $(param).val();
+        if (!ini || !value) return true;
+        return value > ini;
+    }, 'La fecha de fin debe ser mayor que la fecha de inicio');
+
+    $('#formCurso').validate({
+        rules: {
+            codigo:       { required: true },
+            nombre:       { required: true, minlength: 3 },
+            instructor:   { required: true },
+            duracion:     { required: true, min: 1, digits: true },
+            cupos:        { required: true, min: 1, digits: true },
+            fecha_inicio: { required: true },
+            fecha_fin:    { required: true, mayorQue: '#fecha_inicio' },
+            modalidad:    { required: true },
+            estado:       { required: true }
+        },
+        messages: {
+            codigo:       { required: 'El código es obligatorio' },
+            nombre:       { required: 'El nombre es obligatorio' },
+            instructor:   { required: 'El instructor es obligatorio' },
+            duracion:     { required: 'La duración es obligatoria', min: 'Debe ser mayor que 0' },
+            cupos:        { required: 'Los cupos son obligatorios', min: 'Debe ser mayor que 0' },
+            fecha_inicio: { required: 'La fecha de inicio es obligatoria' },
+            fecha_fin:    { required: 'La fecha de fin es obligatoria' }
+        },
+        errorClass: 'text-danger small',
+        highlight:   function(el){ $(el).addClass('is-invalid'); },
+        unhighlight: function(el){ $(el).removeClass('is-invalid'); },
+        submitHandler: function(form){ form.submit(); }
+    });
+});
+</script>
+{% endblock %}

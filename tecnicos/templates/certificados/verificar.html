@@ -1,0 +1,92 @@
+{% extends 'plantillaPrincipal.html' %}
+{% load static %}
+
+{% block contenido %}
+<div style="padding:60px 0; background:#f5f7fa; min-height:80vh;">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            {% if valido %}
+            <div class="card border-0 shadow">
+                <div class="card-header text-center py-4"
+                     style="background:linear-gradient(135deg,#4255A4,#C86FFF); border-radius:8px 8px 0 0;">
+                    <i class="ti-check-box" style="font-size:3rem; color:#fff;"></i>
+                    <h3 class="text-white mt-2 mb-0">Certificado Válido</h3>
+                    <small style="color:rgba(255,255,255,0.8);">
+                        Código: <strong>{{ cert.codigo }}</strong>
+                    </small>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- Información en texto (lo que muestra al escanear el QR) -->
+                    <div class="alert" style="background:#f0f4ff; border-left:4px solid #C86FFF;">
+                        <h5 style="color:#4255A4;"><i class="ti-id-badge mr-2"></i>Datos del Técnico</h5>
+                        <p class="mb-1"><strong>Nombre:</strong> {{ cert.participacion.tecnico.nombre_completo }}</p>
+                        <p class="mb-1"><strong>Cédula:</strong> {{ cert.participacion.tecnico.cedula }}</p>
+                        <p class="mb-1"><strong>Institución:</strong> {{ cert.participacion.tecnico.institucion }}</p>
+                    </div>
+
+                    <div class="alert" style="background:#f0fff4; border-left:4px solid #28a745;">
+                        <h5 style="color:#28a745;"><i class="ti-book mr-2"></i>Datos del Curso</h5>
+                        <p class="mb-1"><strong>Curso:</strong> {{ cert.participacion.curso.nombre }}</p>
+                        <p class="mb-1"><strong>Instructor:</strong> {{ cert.participacion.curso.instructor }}</p>
+                        <p class="mb-1"><strong>Duración:</strong> {{ cert.participacion.curso.duracion }} horas</p>
+                        <p class="mb-1"><strong>Modalidad:</strong> {{ cert.participacion.curso.modalidad }}</p>
+                        <p class="mb-1"><strong>Fecha de finalización:</strong> {{ cert.participacion.curso.fecha_fin }}</p>
+                        <p class="mb-1"><strong>Nota final:</strong> {{ cert.participacion.nota_final }}</p>
+                    </div>
+
+                    <div class="alert" style="background:#fffbf0; border-left:4px solid #ffc107;">
+                        <h5 style="color:#856404;"><i class="ti-write mr-2"></i>Datos del Certificado</h5>
+                        <p class="mb-1"><strong>Código de verificación:</strong> <code>{{ cert.codigo }}</code></p>
+                        <p class="mb-1"><strong>Fecha de emisión:</strong> {{ cert.fecha_emision }}</p>
+                        <p class="mb-0">
+                            <strong>Estado:</strong>
+                            <span class="badge badge-success" style="font-size:1rem;">
+                                ✓ Certificado válido y verificado
+                            </span>
+                        </p>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="text-center mt-4">
+                        <a href="/certificado/generar/{{ cert.participacion.id }}/"
+                           class="btn mr-2" style="padding:12px 30px !important;">
+                            <i class="ti-download mr-1"></i> Descargar PDF
+                        </a>
+                        <a href="/certificado/imprimir/{{ cert.participacion.id }}/"
+                           class="btn btn-dark"
+                           style="padding:12px 30px !important;"
+                           onclick="window.open(this.href,'Certificado','width=900,height=700,resizable=yes,scrollbars=yes'); return false;">
+                            <i class="ti-printer mr-1"></i> Imprimir
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            {% else %}
+            <div class="card border-0 shadow text-center">
+                <div class="card-header py-4" style="background:#c0392b; border-radius:8px 8px 0 0;">
+                    <i class="ti-close" style="font-size:3rem; color:#fff;"></i>
+                    <h3 class="text-white mt-2 mb-0">Certificado No Encontrado</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-danger">
+                        <strong>Código consultado: {{ codigo }}</strong><br>
+                        No se encontró ningún certificado con este código en el sistema.
+                        El documento puede ser inválido.
+                    </div>
+                    <a href="/" class="btn" style="padding:12px 30px !important;">
+                        <i class="ti-home mr-1"></i> Ir al inicio
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
