@@ -8,44 +8,40 @@
             <br>
 
             {% if es_admin %}
-            <!-- ══ PANEL ADMINISTRADOR ══ -->
+            <!-- ══════════════════════════════════════
+                 PANEL ADMINISTRADOR
+            ══════════════════════════════════════ -->
             <h1><b>Panel de Administrador</b></h1>
             <hr>
-            <p>Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
-               &nbsp;|&nbsp; {{ fecha_hoy }}</p>
-            <br>
+            <p>
+                Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
+                &nbsp;|&nbsp; {{ fecha_hoy }}
+                &nbsp;|&nbsp;
+                <a href="/logout/" class="btn btn-danger btn-sm">
+                    <i class="ti-power-off mr-1"></i> Cerrar Sesión
+                </a>
+            </p>
+            <hr>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="card border-left-primary">
-                        <div class="card-body py-2">
-                            <b>Total Técnicos:</b> {{ total_tecnicos }}
-                            &nbsp;
-                            <a href="/tecnicos/" class="btn btn-sm btn-outline-primary float-right">Ver listado</a>
-                        </div>
-                    </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <b>Total Técnicos:</b> {{ total_tecnicos }}
+                    &nbsp;&nbsp;
+                    <a href="/tecnicos/" class="btn btn-sm btn-outline-primary">Ver listado</a>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body py-2">
-                            <b>Cursos Activos:</b> {{ total_cursos }}
-                            &nbsp;
-                            <a href="/cursos/" class="btn btn-sm btn-outline-success float-right">Ver cursos</a>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <b>Cursos Activos:</b> {{ total_cursos }}
+                    &nbsp;&nbsp;
+                    <a href="/cursos/" class="btn btn-sm btn-outline-success">Ver cursos</a>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body py-2">
-                            <b>Certificados Emitidos:</b> {{ total_certificados }}
-                            &nbsp;
-                            <a href="/participaciones/" class="btn btn-sm btn-outline-warning float-right">Ver todos</a>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <b>Certificados:</b> {{ total_certificados }}
+                    &nbsp;&nbsp;
+                    <a href="/participaciones/" class="btn btn-sm btn-outline-warning">Ver todos</a>
                 </div>
             </div>
-
             <hr>
+
             <h5><b>Acciones rápidas</b></h5>
             <a href="/tecnicos/nuevo/" class="btn btn-success mr-2 mb-2">
                 <i class="ti-plus mr-1"></i> Nuevo Técnico
@@ -56,17 +52,83 @@
             <a href="/participaciones/nueva/" class="btn btn-success mr-2 mb-2">
                 <i class="ti-plus mr-1"></i> Inscribir Técnico
             </a>
+            <hr>
+
+            <h5><b>Últimas participaciones</b></h5>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead style="background:#4255A4; color:#fff;">
+                        <tr>
+                            <th>TÉCNICO</th>
+                            <th>CURSO</th>
+                            <th>NOTA</th>
+                            <th>ESTADO</th>
+                            <th>CERTIFICADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in ultimas_participaciones %}
+                        <tr>
+                            <td>{{ p.tecnico.nombre_completo }}</td>
+                            <td>{{ p.curso.nombre }}</td>
+                            <td>{{ p.nota_final|default:"—" }}</td>
+                            <td>
+                                {% if p.estado == 'Aprobado' %}
+                                    <span class="badge badge-success">Aprobado</span>
+                                {% elif p.estado == 'Reprobado' %}
+                                    <span class="badge badge-danger">Reprobado</span>
+                                {% else %}
+                                    <span class="badge badge-info">{{ p.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.estado == 'Aprobado' %}
+                                    <a href="/certificado/generar/{{ p.id }}/"
+                                       class="btn btn-outline-success btn-sm">
+                                        <i class="ti-download"></i> PDF
+                                    </a>
+                                    <a href="/certificado/imprimir/{{ p.id }}/"
+                                       class="btn btn-outline-dark btn-sm"
+                                       onclick="window.open(this.href,'Cert','width=900,height=700'); return false;">
+                                        <i class="ti-printer"></i> Imprimir
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No hay participaciones registradas aún.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             {% else %}
-            <!-- ══ PANEL TÉCNICO ══ -->
+            <!-- ══════════════════════════════════════
+                 PANEL TÉCNICO
+            ══════════════════════════════════════ -->
             <h1><b>Mis Cursos</b></h1>
             <hr>
-            <p>Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
-               &nbsp;|&nbsp; {{ fecha_hoy }}</p>
-            <br>
+            <p>
+                Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
+                &nbsp;|&nbsp; {{ fecha_hoy }}
+                &nbsp;|&nbsp;
+                <a href="/logout/" class="btn btn-danger btn-sm">
+                    <i class="ti-power-off mr-1"></i> Cerrar Sesión
+                </a>
+            </p>
+            <hr>
 
             <a href="/cursos-disponibles/" class="btn btn-success mb-3">
                 <i class="ti-plus mr-1"></i> Inscribirme en un curso
+            </a>
+            <a href="/perfil/" class="btn btn-secondary mb-3 ml-2">
+                <i class="ti-user mr-1"></i> Mi Perfil
             </a>
 
             <div class="table-responsive">
@@ -100,11 +162,11 @@
                             <td>
                                 {% if p.estado == 'Aprobado' %}
                                     <a href="/certificado/generar/{{ p.id }}/"
-                                       class="btn btn-outline-success btn-sm" title="Descargar PDF">
+                                       class="btn btn-outline-success btn-sm">
                                         <i class="ti-download mr-1"></i> Descargar PDF
                                     </a>
                                     <a href="/certificado/imprimir/{{ p.id }}/"
-                                       class="btn btn-outline-dark btn-sm" title="Imprimir"
+                                       class="btn btn-outline-dark btn-sm"
                                        onclick="window.open(this.href,'Certificado','width=900,height=700,resizable=yes,scrollbars=yes'); return false;">
                                         <i class="ti-printer mr-1"></i> Imprimir
                                     </a>

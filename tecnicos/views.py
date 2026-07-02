@@ -72,6 +72,9 @@ def dashboard(request):
             'total_cursos':          Curso.objects.filter(estado='Activo').count(),
             'total_participaciones': Participacion.objects.count(),
             'total_certificados':    Certificado.objects.count(),
+            'ultimas_participaciones': Participacion.objects.select_related(
+                'tecnico', 'curso'
+            ).order_by('-fecha_inscripcion')[:10],
         })
     else:
         try:
