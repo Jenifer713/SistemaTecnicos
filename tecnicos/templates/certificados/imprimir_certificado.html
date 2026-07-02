@@ -25,16 +25,17 @@
             pointer-events: none;
         }
         .titulo { font-size: 2rem; color: #4255A4; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; }
-        .subtitulo { font-size: 1rem; color: #888; margin-bottom: 30px; }
-        .nombre-tecnico { font-size: 2rem; color: #C86FFF; font-weight: bold; border-bottom: 2px solid #C86FFF; display: inline-block; padding-bottom: 5px; margin: 15px 0; }
+        .subtitulo { font-size: 1rem; color: #888; margin-bottom: 20px; }
+        .nombre-tecnico { font-size: 2rem; color: #C86FFF; font-weight: bold; border-bottom: 2px solid #C86FFF; display: inline-block; padding-bottom: 5px; margin: 10px 0; }
         .nombre-curso { font-size: 1.4rem; color: #4255A4; font-style: italic; margin: 10px 0; }
-        .detalle { font-size: 1rem; color: #555; margin: 8px 0; }
-        .codigo { font-size: 0.85rem; color: #999; margin-top: 20px; }
-        .firma-line { border-top: 1px solid #4255A4; width: 200px; margin: 0 auto 5px; }
-        .qr-section { margin-top: 20px; }
+        .detalle { font-size: 1rem; color: #555; margin: 6px 0; }
+        .codigo { font-size: 0.85rem; color: #999; margin-top: 15px; }
+        .firma-line { border-top: 1px solid #4255A4; width: 220px; margin: 0 auto 5px; }
         @media print {
-            button { display: none; }
+            button { display: none !important; }
+            .no-print { display: none !important; }
             @page { margin: 1cm; }
+            body { padding: 0; }
         }
     </style>
 </head>
@@ -46,12 +47,9 @@
     <p class="subtitulo">Sistema de Gestión de Técnicos en Tecnología</p>
 
     <p style="font-size:1rem; color:#555;">Se certifica que</p>
-
     <p class="nombre-tecnico">{{ participacion.tecnico.nombre_completo }}</p>
-
     <p style="font-size:1rem; color:#555;">con cédula <strong>{{ participacion.tecnico.cedula }}</strong></p>
     <p style="font-size:1rem; color:#555;">ha aprobado satisfactoriamente el curso</p>
-
     <p class="nombre-curso">"{{ participacion.curso.nombre }}"</p>
 
     <p class="detalle"><strong>Instructor:</strong> {{ participacion.curso.instructor }}</p>
@@ -61,53 +59,52 @@
 
     <br>
 
-    <!-- QR -->
-    <div class="qr-section">
-        <div id="qrcode" style="display:inline-block;"></div>
-        <p style="font-size:0.8rem; color:#999; margin-top:5px;">Escanea para verificar</p>
-    </div>
+    <!-- Contenedor del QR — el script lo llena después -->
+    <div id="qrcode_cert" style="display:inline-block; margin: 10px auto;"></div>
+    <p style="font-size:0.75rem; color:#999; margin-top:3px;">Escanea para verificar</p>
 
     <br>
     <div class="firma-line"></div>
-    <p style="font-size:0.9rem; color:#555;">{{ participacion.curso.instructor }}</p>
+    <p style="font-size:0.9rem; color:#555; margin-top:5px;">{{ participacion.curso.instructor }}</p>
     <p style="font-size:0.8rem; color:#888;">Instructor del curso</p>
 
-    <p class="codigo">Código de verificación: <strong>{{ cert.codigo }}</strong> &nbsp;|&nbsp; Emitido: {{ cert.fecha_emision }}</p>
+    <p class="codigo">
+        Código de verificación: <strong>{{ cert.codigo }}</strong>
+        &nbsp;|&nbsp; Emitido: {{ cert.fecha_emision }}
+    </p>
 
 </div>
 
 <br>
-<center>
-    <button onclick="window.print();" class="btn btn-success mr-2">
-        <i class="ti-printer mr-1"></i> Imprimir
-    </button>
-    <button onclick="window.close();" class="btn btn-secondary">
-        Cerrar
-    </button>
+<center class="no-print">
+    <button onclick="window.print();" class="btn btn-success mr-2">Imprimir</button>
+    <button onclick="window.close();" class="btn btn-secondary">Cerrar</button>
 </center>
 
-<!-- QRCode.js local o CDN — usamos el que está en static -->
-<script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+<!-- qrcode.js DEBE cargarse al final del body, DESPUÉS del div destino -->
 <script src="{% static 'assets/js/qrcode.min.js' %}"></script>
-<script>
-new QRCode(document.getElementById("qrcode"), {
-    text: "{{ url_verificacion }}",
-    width: 100,
-    height: 100,
-    colorDark: "#4255A4",
-    colorLight: "#ffffff"
-});
+<script type="text/javascript">
 window.onload = function() {
-    // Auto-imprime al abrir (opcional — comentar si no se quiere)
-    // window.print();
+    var textoQR = "TECNICO: {{ participacion.tecnico.nombre_completo|escapejs }}" +
+                  " | CEDULA: {{ participacion.tecnico.cedula }}" +
+                  " | CURSO: {{ participacion.curso.nombre|escapejs }}" +
+                  " | DURACION: {{ participacion.curso.duracion }}h" +
+                  " | INSTRUCTOR: {{ participacion.curso.instructor|escapejs }}" +
+                  " | FECHA: {{ participacion.curso.fecha_fin }}" +
+                  " | NOTA: {{ participacion.nota_final }}" +
+                  " | ESTADO: Aprobado" +
+                  " | CODIGO: {{ cert.codigo }}";
+
+    new QRCode(document.getElementById("qrcode_cert"), {
+        text: textoQR,
+        width: 180,
+        height: 180,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.L
+    });
 };
 </script>
-
-<style media="print">
-    button { display: none !important; }
-    @page { margin: 1cm; }
-    body { padding: 0; }
-</style>
 
 </body>
 </html>
