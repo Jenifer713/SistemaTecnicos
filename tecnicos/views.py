@@ -23,8 +23,7 @@ def solo_admin(view_func):
 
 # INICIO
 def inicio(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
+    # Siempre muestra la página de inicio, sin redireccionar
     return render(request, 'inicio.html')
 
 
@@ -32,9 +31,7 @@ def inicio(request):
 # LOGIN / LOGOUT
 
 def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-
+    # Si ya está autenticado puede seguir navegando normalmente
     from django.contrib.auth.forms import AuthenticationForm
     form = AuthenticationForm()
 

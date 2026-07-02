@@ -7,7 +7,7 @@
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <br>
-            <h1><b>{% if tecnico %}Actualizar Técnico{% else %}Registrar Técnico{% endif %}</b></h1>
+            <h1><b>{% if tecnico %}Actualizar Técnico{% else %}Registrar Nuevo Técnico{% endif %}</b></h1>
             <hr>
 
             <form enctype="multipart/form-data" id="form_tecnico"
@@ -53,7 +53,7 @@
                     </div>
                     <div class="col-md-6">
                         <b>Especialidad:</b> <br>
-                        <select class="form-control" name="especialidad">
+                        <select class="form-control" name="especialidad" id="especialidad">
                             <option value="">Seleccione...</option>
                             {% for val, label in especialidades %}
                                 <option value="{{ val }}"
@@ -80,7 +80,8 @@
                     </div>
                     <div class="col-md-6">
                         <b>Fecha de ingreso:</b> <br>
-                        <input class="form-control" type="date" name="fecha_ingreso"
+                        <input class="form-control" type="date"
+                               name="fecha_ingreso"
                                value="{{ tecnico.fecha_ingreso|default:'' }}">
                         <br>
                     </div>
@@ -95,13 +96,17 @@
                     <div class="col-md-12">
                         <b>Fotografía:</b><br>
                         <input type="file" name="foto" id="foto" class="form-control"
-                               accept=".jpg,.jpeg,.png">
+                               accept=".jpg,.jpeg,.png"
+                               {% if tecnico.foto %}
+                               data-initial-preview="<img src='{{ tecnico.foto.url }}' class='file-preview-image'>"
+                               data-initial-preview-config='[{"caption": "foto_tecnico", "showDelete": false}]'
+                               {% endif %}>
                         {% if tecnico.foto %}
                             <small class="text-muted">
                                 Foto actual:
                                 <a href="{{ tecnico.foto.url }}" target="_blank">
                                     <img src="{{ tecnico.foto.url }}"
-                                         style="height:40px; width:40px; border-radius:50%; object-fit:cover; margin-left:8px;">
+                                         style="height:35px; width:35px; border-radius:50%; margin-left:5px; vertical-align:middle;">
                                     ver imagen
                                 </a>
                             </small>
@@ -127,6 +132,7 @@
 {% block extra_js %}
 <script>
 $(document).ready(function () {
+
     jQuery.validator.addMethod("soloCedula", function (value, element) {
         return this.optional(element) || /^\d{10}$/.test(value);
     }, "La cédula debe tener exactamente 10 dígitos numéricos");
@@ -154,22 +160,22 @@ $(document).ready(function () {
             correo:       { required: true, email: true },
             telefono:     { required: true, soloTelefono: true },
             especialidad: { required: true },
-            institucion:  { required: true },
-            ciudad:       { required: true },
+            institucion:  { required: true, minlength: 3, maxlength: 150 },
+            ciudad:       { required: true, minlength: 2, maxlength: 100 },
             fecha_ingreso:{ required: true },
             estado:       { required: true }
         },
         messages: {
-            cedula:       { required: "La cédula es obligatoria" },
-            nombres:      { required: "Los nombres son obligatorios", minlength: "Mínimo 2 caracteres" },
-            apellidos:    { required: "Los apellidos son obligatorios", minlength: "Mínimo 2 caracteres" },
-            correo:       { required: "El correo es obligatorio", email: "Ingrese un correo válido" },
-            telefono:     { required: "El teléfono es obligatorio" },
-            especialidad: { required: "Seleccione una especialidad" },
-            institucion:  { required: "La institución es obligatoria" },
-            ciudad:       { required: "La ciudad es obligatoria" },
-            fecha_ingreso:{ required: "La fecha de ingreso es obligatoria" },
-            estado:       { required: "El estado es obligatorio" }
+            cedula:       { required: "Por favor, ingrese la cédula" },
+            nombres:      { required: "Por favor, ingrese los nombres", minlength: "Mínimo 2 caracteres" },
+            apellidos:    { required: "Por favor, ingrese los apellidos", minlength: "Mínimo 2 caracteres" },
+            correo:       { required: "Por favor, ingrese el correo", email: "Ingrese un correo válido" },
+            telefono:     { required: "Por favor, ingrese el teléfono" },
+            especialidad: { required: "Por favor, seleccione la especialidad" },
+            institucion:  { required: "Por favor, ingrese la institución", minlength: "Mínimo 3 caracteres", maxlength: "Máximo 150 caracteres" },
+            ciudad:       { required: "Por favor, ingrese la ciudad", minlength: "Mínimo 2 caracteres" },
+            fecha_ingreso:{ required: "Por favor, seleccione la fecha de ingreso" },
+            estado:       { required: "Por favor, seleccione el estado" }
         }
     });
 });

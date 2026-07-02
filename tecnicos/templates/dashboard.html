@@ -2,287 +2,131 @@
 {% load static %}
 
 {% block contenido %}
-<div style="background:#f7f7fd; min-height:calc(100vh - 100px); padding: 40px 0;">
-<div class="container-fluid px-4">
-
-    <!-- ── Bienvenida ── -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm"
-                 style="background: linear-gradient(135deg, #4255A4, #C86FFF); border-radius:10px;">
-                <div class="card-body py-4 px-4 d-flex align-items-center justify-content-between flex-wrap">
-                    <div>
-                        <h3 class="mb-1" style="color:#fff; font-weight:700;">
-                            <i class="ti-home mr-2"></i>
-                            Bienvenido/a, <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
-                        </h3>
-                        <p class="mb-0" style="color:rgba(255,255,255,0.8);">
-                            {% if es_admin %}
-                                <i class="ti-crown mr-1" style="color:#FFD700;"></i>
-                                <span style="color:#FFD700;">Administrador</span>
-                            {% else %}
-                                <i class="ti-id-badge mr-1" style="color:#FFD700;"></i>
-                                <span style="color:#FFD700;">Técnico</span>
-                            {% endif %}
-                            &nbsp;|&nbsp; {{ fecha_hoy }}
-                        </p>
-                    </div>
-                    <a href="/logout/" class="btn btn3" style="margin-top:0;">
-                        <i class="ti-power-off mr-1"></i> Cerrar Sesión
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {% if es_admin %}
-    <!-- ══════════════════════════════════════
-         PANEL ADMINISTRADOR
-    ══════════════════════════════════════ -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-id-badge" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ total_tecnicos }}</h2>
-                    <p class="text-muted mb-3">Técnicos registrados</p>
-                    <a href="/tecnicos/" class="btn" style="padding:12px 25px !important;">Ver listado</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-book" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ total_cursos }}</h2>
-                    <p class="text-muted mb-3">Cursos activos</p>
-                    <a href="/cursos/" class="btn" style="padding:12px 25px !important;">Ver cursos</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-clipboard" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ total_participaciones }}</h2>
-                    <p class="text-muted mb-3">Participaciones</p>
-                    <a href="/participaciones/" class="btn" style="padding:12px 25px !important;">Ver listado</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-write" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ total_certificados }}</h2>
-                    <p class="text-muted mb-3">Certificados emitidos</p>
-                    <a href="/participaciones/" class="btn" style="padding:12px 25px !important;">Ver certificados</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Accesos rápidos -->
+<div class="container">
     <div class="row">
-        <div class="col-12 mb-3">
-            <h5 style="color:#4255A4; font-weight:700;">
-                <i class="ti-layout-grid2 mr-2"></i>Accesos rápidos
-            </h5>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="/tecnicos/nuevo/" class="text-decoration-none">
-                <div class="card border-0 shadow-sm text-center h-100"
-                     style="border-radius:10px; padding:30px 0; transition:.2s; cursor:pointer;"
-                     onmouseover="this.style.transform='translateY(-5px)'"
-                     onmouseout="this.style.transform='none'">
-                    <div class="card-body">
-                        <div style="width:70px;height:70px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                    display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                            <i class="ti-user-plus" style="font-size:2rem;color:#C86FFF;"></i>
+        <div class="col-md-12">
+            <br>
+
+            {% if es_admin %}
+            <!-- ══ PANEL ADMINISTRADOR ══ -->
+            <h1><b>Panel de Administrador</b></h1>
+            <hr>
+            <p>Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
+               &nbsp;|&nbsp; {{ fecha_hoy }}</p>
+            <br>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-left-primary">
+                        <div class="card-body py-2">
+                            <b>Total Técnicos:</b> {{ total_tecnicos }}
+                            &nbsp;
+                            <a href="/tecnicos/" class="btn btn-sm btn-outline-primary float-right">Ver listado</a>
                         </div>
-                        <h6 style="color:#4255A4; font-weight:700;">Nuevo Técnico</h6>
-                        <small class="text-muted">Registrar un técnico</small>
                     </div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="/cursos/nuevo/" class="text-decoration-none">
-                <div class="card border-0 shadow-sm text-center h-100"
-                     style="border-radius:10px; padding:30px 0; transition:.2s; cursor:pointer;"
-                     onmouseover="this.style.transform='translateY(-5px)'"
-                     onmouseout="this.style.transform='none'">
-                    <div class="card-body">
-                        <div style="width:70px;height:70px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                    display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                            <i class="ti-plus" style="font-size:2rem;color:#C86FFF;"></i>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body py-2">
+                            <b>Cursos Activos:</b> {{ total_cursos }}
+                            &nbsp;
+                            <a href="/cursos/" class="btn btn-sm btn-outline-success float-right">Ver cursos</a>
                         </div>
-                        <h6 style="color:#4255A4; font-weight:700;">Nuevo Curso</h6>
-                        <small class="text-muted">Crear un curso</small>
                     </div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4 mb-3">
-            <a href="/participaciones/nueva/" class="text-decoration-none">
-                <div class="card border-0 shadow-sm text-center h-100"
-                     style="border-radius:10px; padding:30px 0; transition:.2s; cursor:pointer;"
-                     onmouseover="this.style.transform='translateY(-5px)'"
-                     onmouseout="this.style.transform='none'">
-                    <div class="card-body">
-                        <div style="width:70px;height:70px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                    display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                            <i class="ti-agenda" style="font-size:2rem;color:#C86FFF;"></i>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body py-2">
+                            <b>Certificados Emitidos:</b> {{ total_certificados }}
+                            &nbsp;
+                            <a href="/participaciones/" class="btn btn-sm btn-outline-warning float-right">Ver todos</a>
                         </div>
-                        <h6 style="color:#4255A4; font-weight:700;">Inscribir Técnico</h6>
-                        <small class="text-muted">Asignar a un curso</small>
                     </div>
                 </div>
+            </div>
+
+            <hr>
+            <h5><b>Acciones rápidas</b></h5>
+            <a href="/tecnicos/nuevo/" class="btn btn-success mr-2 mb-2">
+                <i class="ti-plus mr-1"></i> Nuevo Técnico
             </a>
+            <a href="/cursos/nuevo/" class="btn btn-success mr-2 mb-2">
+                <i class="ti-plus mr-1"></i> Nuevo Curso
+            </a>
+            <a href="/participaciones/nueva/" class="btn btn-success mr-2 mb-2">
+                <i class="ti-plus mr-1"></i> Inscribir Técnico
+            </a>
+
+            {% else %}
+            <!-- ══ PANEL TÉCNICO ══ -->
+            <h1><b>Mis Cursos</b></h1>
+            <hr>
+            <p>Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
+               &nbsp;|&nbsp; {{ fecha_hoy }}</p>
+            <br>
+
+            <a href="/cursos-disponibles/" class="btn btn-success mb-3">
+                <i class="ti-plus mr-1"></i> Inscribirme en un curso
+            </a>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead style="background:#4255A4; color:#fff;">
+                        <tr>
+                            <th>CURSO</th>
+                            <th>FECHA INSCRIPCIÓN</th>
+                            <th>NOTA</th>
+                            <th>ESTADO</th>
+                            <th>CERTIFICADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in participaciones_tecnico %}
+                        <tr>
+                            <td>{{ p.curso.nombre }}</td>
+                            <td>{{ p.fecha_inscripcion }}</td>
+                            <td>{{ p.nota_final|default:"—" }}</td>
+                            <td>
+                                {% if p.estado == 'Aprobado' %}
+                                    <span class="badge badge-success">Aprobado</span>
+                                {% elif p.estado == 'Reprobado' %}
+                                    <span class="badge badge-danger">Reprobado</span>
+                                {% elif p.estado == 'Retirado' %}
+                                    <span class="badge badge-secondary">Retirado</span>
+                                {% else %}
+                                    <span class="badge badge-info">Inscrito</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.estado == 'Aprobado' %}
+                                    <a href="/certificado/generar/{{ p.id }}/"
+                                       class="btn btn-outline-success btn-sm" title="Descargar PDF">
+                                        <i class="ti-download mr-1"></i> Descargar PDF
+                                    </a>
+                                    <a href="/certificado/imprimir/{{ p.id }}/"
+                                       class="btn btn-outline-dark btn-sm" title="Imprimir"
+                                       onclick="window.open(this.href,'Certificado','width=900,height=700,resizable=yes,scrollbars=yes'); return false;">
+                                        <i class="ti-printer mr-1"></i> Imprimir
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-3 text-muted">
+                                No tienes participaciones registradas aún.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <br>
         </div>
     </div>
-
-    {% else %}
-    <!-- ══════════════════════════════════════
-         PANEL TÉCNICO
-    ══════════════════════════════════════ -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-clipboard" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ mis_participaciones }}</h2>
-                    <p class="text-muted mb-0">Mis cursos</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-check-box" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ mis_aprobados }}</h2>
-                    <p class="text-muted mb-0">Aprobados</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm text-center" style="border-radius:10px; padding:20px 0;">
-                <div class="card-body">
-                    <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                        <i class="ti-write" style="font-size:1.8rem;color:#C86FFF;"></i>
-                    </div>
-                    <h2 class="font-weight-bold" style="color:#4255A4;">{{ mis_certificados }}</h2>
-                    <p class="text-muted mb-0">Certificados</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="/perfil/" class="text-decoration-none">
-                <div class="card border-0 shadow-sm text-center h-100"
-                     style="border-radius:10px; padding:20px 0; transition:.2s;"
-                     onmouseover="this.style.transform='translateY(-3px)'"
-                     onmouseout="this.style.transform='none'">
-                    <div class="card-body">
-                        <div style="width:60px;height:60px;border-radius:50%;background:rgba(200,111,255,0.15);
-                                    display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
-                            <i class="ti-user" style="font-size:1.8rem;color:#C86FFF;"></i>
-                        </div>
-                        <h6 style="color:#4255A4; font-weight:700;">Mi Perfil</h6>
-                        <small class="text-muted">Ver y editar</small>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <!-- Tabla de participaciones -->
-    <div class="row">
-        <div class="col-12 mb-3">
-            <h5 style="color:#4255A4; font-weight:700;">
-                <i class="ti-list mr-2"></i>Mis participaciones
-            </h5>
-        </div>
-        <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius:10px;">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead style="background: linear-gradient(135deg, #4255A4, #C86FFF); color:#fff;">
-                                <tr>
-                                    <th>Curso</th>
-                                    <th>Fecha inscripción</th>
-                                    <th>Nota</th>
-                                    <th>Estado</th>
-                                    <th>Certificado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for p in participaciones_tecnico %}
-                                <tr>
-                                    <td>{{ p.curso.nombre }}</td>
-                                    <td>{{ p.fecha_inscripcion }}</td>
-                                    <td>{{ p.nota_final|default:"—" }}</td>
-                                    <td>
-                                        {% if p.estado == 'Aprobado' %}
-                                            <span class="badge badge-success">Aprobado</span>
-                                        {% elif p.estado == 'Reprobado' %}
-                                            <span class="badge badge-danger">Reprobado</span>
-                                        {% elif p.estado == 'Retirado' %}
-                                            <span class="badge badge-secondary">Retirado</span>
-                                        {% else %}
-                                            <span class="badge badge-info">Inscrito</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if p.estado == 'Aprobado' %}
-                                            <a href="/certificado/generar/{{ p.id }}/"
-                                               class="btn btn-sm" style="padding:8px 15px !important;">
-                                                <i class="ti-download mr-1"></i> Descargar PDF
-                                            </a>
-                                        {% else %}
-                                            <span class="text-muted">—</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center py-4" style="color:#999;">
-                                        No tienes participaciones registradas aún.
-                                        <a href="/cursos-disponibles/" class="btn btn-sm ml-3"
-                                           style="padding:8px 20px !important;">
-                                            <i class="ti-plus mr-1"></i> Inscribirme en un curso
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-</div>
 </div>
 {% endblock %}
