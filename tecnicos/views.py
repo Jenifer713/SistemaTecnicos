@@ -206,6 +206,13 @@ def editar_tecnico(request, pk):
 @solo_admin
 def eliminar_tecnico(request, pk):
     tecnico = get_object_or_404(Tecnico, pk=pk)
+    # Validación: no eliminar si tiene participaciones en cursos
+    if tecnico.participaciones.exists():
+        messages.error(
+            request,
+            f'El técnico {tecnico.nombre_completo} está inscrito en un curso y no se puede eliminar.'
+        )
+        return redirect('listado_tecnicos')
     nombre = str(tecnico)
     tecnico.delete()
     messages.success(request, f'Técnico {nombre} eliminado exitosamente.')
@@ -308,6 +315,13 @@ def editar_curso(request, pk):
 @solo_admin
 def eliminar_curso(request, pk):
     curso = get_object_or_404(Curso, pk=pk)
+    # Validación: no eliminar si tiene técnicos inscritos
+    if curso.participaciones.exists():
+        messages.error(
+            request,
+            f'El curso "{curso.nombre}" tiene técnicos inscritos y no se puede eliminar.'
+        )
+        return redirect('listado_cursos')
     nombre = curso.nombre
     curso.delete()
     messages.success(request, f'Curso "{nombre}" eliminado exitosamente.')

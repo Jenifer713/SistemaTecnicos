@@ -199,9 +199,9 @@ function confirmarEliminacion(event, url) {
 {% for mensaje in messages %}
 <script>
 Swal.fire({
-    title: 'Confirmación',
-    text: '{{ mensaje }}',
-    icon: 'success',
+    title: '{% if mensaje.tags == "error" %}Error{% else %}Confirmación{% endif %}',
+    text: '{{ mensaje|escapejs }}',
+    icon: '{% if mensaje.tags == "error" %}error{% else %}success{% endif %}',
     confirmButtonText: 'Aceptar'
 });
 </script>
