@@ -13,7 +13,10 @@
             <hr>
 
             <center>
-                <div id="qrcode_verificar" style="display:inline-block;"></div>
+                {% if qr_b64 %}
+                <img src="data:image/png;base64,{{ qr_b64 }}"
+                     alt="Código QR" style="width:150px; height:150px;">
+                {% endif %}
                 <p class="text-muted" style="font-size:0.85rem;">QR con los datos del certificado</p>
             </center>
             <br>
@@ -83,30 +86,4 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-{% if valido %}
-<script src="{% static 'assets/js/qrcode.min.js' %}"></script>
-<script type="text/javascript">
-window.onload = function() {
-    var textoQR = "TECNICO: {{ cert.participacion.tecnico.nombre_completo|escapejs }}" +
-                  " | CEDULA: {{ cert.participacion.tecnico.cedula }}" +
-                  " | CURSO: {{ cert.participacion.curso.nombre|escapejs }}" +
-                  " | DURACION: {{ cert.participacion.curso.duracion }}h" +
-                  " | INSTRUCTOR: {{ cert.participacion.curso.instructor|escapejs }}" +
-                  " | FECHA: {{ cert.participacion.curso.fecha_fin }}" +
-                  " | NOTA: {{ cert.participacion.nota_final }}" +
-                  " | ESTADO: Aprobado" +
-                  " | CODIGO: {{ cert.codigo }}";
-
-    new QRCode(document.getElementById("qrcode_verificar"), {
-        text: textoQR,
-        width: 150,
-        height: 150,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.L
-    });
-};
-</script>
-{% endif %}
-{% endblock %}
+{% block extra_js %}{% endblock %}

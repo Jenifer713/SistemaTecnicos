@@ -59,9 +59,15 @@
 
     <br>
 
-    <!-- Contenedor del QR — el script lo llena después -->
-    <div id="qrcode_cert" style="display:inline-block; margin: 10px auto;"></div>
-    <p style="font-size:0.75rem; color:#999; margin-top:3px;">Escanea para verificar</p>
+    <!-- Contenedor del QR — imagen generada en el servidor -->
+    <div style="display:inline-block; margin: 10px auto;">
+        {% if qr_b64 %}
+            <img src="data:image/png;base64,{{ qr_b64 }}"
+                 alt="Código QR de verificación"
+                 style="width:180px; height:180px;">
+        {% endif %}
+        <p style="font-size:0.75rem; color:#999; margin-top:3px;">Escanea para verificar</p>
+    </div>
 
     <br>
     <div class="firma-line"></div>
@@ -81,30 +87,7 @@
     <button onclick="window.close();" class="btn btn-secondary">Cerrar</button>
 </center>
 
-<!-- qrcode.js DEBE cargarse al final del body, DESPUÉS del div destino -->
-<script src="{% static 'assets/js/qrcode.min.js' %}"></script>
-<script type="text/javascript">
-window.onload = function() {
-    var textoQR = "TECNICO: {{ participacion.tecnico.nombre_completo|escapejs }}" +
-                  " | CEDULA: {{ participacion.tecnico.cedula }}" +
-                  " | CURSO: {{ participacion.curso.nombre|escapejs }}" +
-                  " | DURACION: {{ participacion.curso.duracion }}h" +
-                  " | INSTRUCTOR: {{ participacion.curso.instructor|escapejs }}" +
-                  " | FECHA: {{ participacion.curso.fecha_fin }}" +
-                  " | NOTA: {{ participacion.nota_final }}" +
-                  " | ESTADO: Aprobado" +
-                  " | CODIGO: {{ cert.codigo }}";
-
-    new QRCode(document.getElementById("qrcode_cert"), {
-        text: textoQR,
-        width: 180,
-        height: 180,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.L
-    });
-};
-</script>
+<!-- qrcode.js ya no se necesita — QR generado en el servidor -->
 
 </body>
 </html>

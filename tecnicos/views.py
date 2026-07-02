@@ -550,19 +550,40 @@ def generar_certificado(request, pk):
 @login_required(login_url='/login/')
 def verificar_certificado(request, codigo):
     """Página pública de verificación del certificado (destino del QR)."""
+    import base64
     try:
         cert = Certificado.objects.select_related(
             'participacion__tecnico', 'participacion__curso'
         ).get(codigo=codigo)
         valido = True
+
+        # Generar QR lado servidor
+        texto_qr = (
+            f"TECNICO: {cert.participacion.tecnico.nombre_completo} | "
+            f"CEDULA: {cert.participacion.tecnico.cedula} | "
+            f"CURSO: {cert.participacion.curso.nombre} | "
+            f"DURACION: {cert.participacion.curso.duracion}h | "
+            f"INSTRUCTOR: {cert.participacion.curso.instructor} | "
+            f"FECHA: {cert.participacion.curso.fecha_fin} | "
+            f"NOTA: {cert.participacion.nota_final} | "
+            f"ESTADO: Aprobado | "
+            f"CODIGO: {cert.codigo}"
+        )
+        qr_img = qrcode.make(texto_qr)
+        qr_buf = io.BytesIO()
+        qr_img.save(qr_buf, format='PNG')
+        qr_b64 = base64.b64encode(qr_buf.getvalue()).decode('utf-8')
+
     except Certificado.DoesNotExist:
         cert   = None
         valido = False
+        qr_b64 = None
 
     return render(request, 'certificados/verificar.html', {
         'cert': cert,
         'valido': valido,
         'codigo': codigo,
+        'qr_b64': qr_b64,
     })
 
 
@@ -865,10 +886,30 @@ def imprimir_certificado(request, pk):
     )
 
     url_verificacion = request.build_absolute_uri(f'/verificar/{cert.codigo}/')
+
+    # ── Generar QR como imagen base64 (lado servidor, sin JS) ──
+    import base64
+    texto_qr = (
+        f"TECNICO: {participacion.tecnico.nombre_completo} | "
+        f"CEDULA: {participacion.tecnico.cedula} | "
+        f"CURSO: {participacion.curso.nombre} | "
+        f"DURACION: {participacion.curso.duracion}h | "
+        f"INSTRUCTOR: {participacion.curso.instructor} | "
+        f"FECHA: {participacion.curso.fecha_fin} | "
+        f"NOTA: {participacion.nota_final} | "
+        f"ESTADO: Aprobado | "
+        f"CODIGO: {cert.codigo}"
+    )
+    qr_img = qrcode.make(texto_qr)
+    qr_buf = io.BytesIO()
+    qr_img.save(qr_buf, format='PNG')
+    qr_b64 = base64.b64encode(qr_buf.getvalue()).decode('utf-8')
+
     return render(request, 'certificados/imprimir_certificado.html', {
         'cert': cert,
         'participacion': participacion,
         'url_verificacion': url_verificacion,
+        'qr_b64': qr_b64,
     })
 
 
