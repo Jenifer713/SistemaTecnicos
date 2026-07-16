@@ -104,7 +104,7 @@ $(document).ready(function () {
             tecnico: { required: true },
             curso:   { required: true },
             {% endif %}
-            nota_final: { min: 0, max: 100 }
+            nota_final: { min: 0, max: 100, number: true }
         },
         messages: {
             {% if not participacion %}
@@ -113,7 +113,8 @@ $(document).ready(function () {
             {% endif %}
             nota_final: {
                 min: "La nota mínima es 0",
-                max: "La nota máxima es 100"
+                max: "La nota máxima es 100",
+                number: "La nota debe ser un número válido (ej: 85.50)"
             }
         }
     });

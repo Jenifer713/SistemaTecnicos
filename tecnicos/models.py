@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import (
+    MinValueValidator, MaxValueValidator, RegexValidator
+)
 
 
 # TÉCNICO
@@ -28,11 +31,23 @@ class Tecnico(models.Model):
         related_name='tecnico'
     )
 
-    cedula      = models.CharField(max_length=10, unique=True, verbose_name='Cédula')
-    nombres     = models.CharField(max_length=100, verbose_name='Nombres')
-    apellidos   = models.CharField(max_length=100, verbose_name='Apellidos')
+    cedula      = models.CharField(
+        max_length=10, unique=True, verbose_name='Cédula',
+        validators=[RegexValidator(r'^\d{10}$', 'La cédula debe tener exactamente 10 dígitos numéricos.')]
+    )
+    nombres     = models.CharField(
+        max_length=100, verbose_name='Nombres',
+        validators=[RegexValidator(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$', 'Los nombres solo pueden contener letras y espacios.')]
+    )
+    apellidos   = models.CharField(
+        max_length=100, verbose_name='Apellidos',
+        validators=[RegexValidator(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$', 'Los apellidos solo pueden contener letras y espacios.')]
+    )
     correo      = models.EmailField(unique=True, verbose_name='Correo')
-    telefono    = models.CharField(max_length=10, verbose_name='Teléfono')
+    telefono    = models.CharField(
+        max_length=10, verbose_name='Teléfono',
+        validators=[RegexValidator(r'^\d{10}$', 'El teléfono debe tener exactamente 10 dígitos numéricos.')]
+    )
     especialidad= models.CharField(max_length=50, choices=ESPECIALIDAD_CHOICES, verbose_name='Especialidad')
     institucion = models.CharField(max_length=150, verbose_name='Institución')
     ciudad      = models.CharField(max_length=100, verbose_name='Ciudad')
@@ -71,11 +86,17 @@ class Curso(models.Model):
     codigo      = models.CharField(max_length=20, unique=True, verbose_name='Código')
     nombre      = models.CharField(max_length=150, verbose_name='Nombre del curso')
     instructor  = models.CharField(max_length=100, verbose_name='Instructor')
-    duracion    = models.PositiveIntegerField(verbose_name='Duración (horas)')
+    duracion    = models.PositiveIntegerField(
+        verbose_name='Duración (horas)',
+        validators=[MinValueValidator(1), MaxValueValidator(1000)]
+    )
     fecha_inicio= models.DateField(verbose_name='Fecha de inicio')
     fecha_fin   = models.DateField(verbose_name='Fecha de fin')
     modalidad   = models.CharField(max_length=15, choices=MODALIDAD_CHOICES, default='Presencial', verbose_name='Modalidad')
-    cupos       = models.PositiveIntegerField(verbose_name='Cupos disponibles')
+    cupos       = models.PositiveIntegerField(
+        verbose_name='Cupos disponibles',
+        validators=[MinValueValidator(1), MaxValueValidator(500)]
+    )
     descripcion = models.TextField(blank=True, null=True, verbose_name='Descripción')
     estado      = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='Activo', verbose_name='Estado')
 
@@ -102,7 +123,11 @@ class Participacion(models.Model):
     tecnico         = models.ForeignKey(Tecnico, on_delete=models.CASCADE, related_name='participaciones', verbose_name='Técnico')
     curso           = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='participaciones', verbose_name='Curso')
     fecha_inscripcion = models.DateField(auto_now_add=True, verbose_name='Fecha de inscripción')
-    nota_final      = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name='Nota final')
+    nota_final      = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        verbose_name='Nota final',
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
     estado          = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='Inscrito', verbose_name='Estado')
 
     class Meta:

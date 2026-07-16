@@ -72,6 +72,11 @@
                                        onclick="window.open(this.href,'Certificado','width=900,height=700,resizable=yes,scrollbars=yes'); return false;">
                                         <i class="ti-printer"></i> Imprimir
                                     </a>
+                                    <a href="/certificado/enviar/{{ p.id }}/"
+                                       class="btn btn-outline-info btn-sm" title="Enviar por correo"
+                                       onclick="return confirm('¿Enviar el certificado al correo {{ p.tecnico.correo|escapejs }}?')">
+                                        <i class="ti-email"></i> Compartir
+                                    </a>
                                 {% else %}
                                     <span class="text-muted">—</span>
                                 {% endif %}

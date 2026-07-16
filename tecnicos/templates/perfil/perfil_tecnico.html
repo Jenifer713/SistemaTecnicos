@@ -14,61 +14,64 @@
                   action="/perfil/" method="post">
                 {% csrf_token %}
 
+                <b>Cédula:</b> <br>
+                <input placeholder="10 dígitos" class="form-control"
+                       type="text" name="cedula" maxlength="10"
+                       value="{{ tecnico.cedula }}">
+                <br>
+
                 <b>Nombres:</b> <br>
-                <input class="form-control" type="text"
-                       value="{{ tecnico.nombres }}" readonly
-                       style="background:#f8f8f8;">
+                <input placeholder="Ingrese sus nombres" class="form-control"
+                       type="text" name="nombres"
+                       value="{{ tecnico.nombres }}">
                 <br>
 
                 <b>Apellidos:</b> <br>
-                <input class="form-control" type="text"
-                       value="{{ tecnico.apellidos }}" readonly
-                       style="background:#f8f8f8;">
+                <input placeholder="Ingrese sus apellidos" class="form-control"
+                       type="text" name="apellidos"
+                       value="{{ tecnico.apellidos }}">
                 <br>
 
-                <b>Cédula:</b> <br>
-                <input class="form-control" type="text"
-                       value="{{ tecnico.cedula }}" readonly
-                       style="background:#f8f8f8;">
-                <br>
-
-                <b>Correo:</b> <br>
-                <input class="form-control" type="text"
-                       value="{{ tecnico.correo }}" readonly
-                       style="background:#f8f8f8;">
-                <br>
-
-                <b>Especialidad:</b> <br>
-                <input class="form-control" type="text"
-                       value="{{ tecnico.especialidad }}" readonly
-                       style="background:#f8f8f8;">
-                <br>
-
-                <hr>
-                <small class="text-muted">Los campos anteriores solo puede modificarlos el Administrador.</small>
-                <hr>
+                <b>Correo electrónico:</b> <br>
+                <input placeholder="correo@ejemplo.com" class="form-control"
+                       type="email" name="correo"
+                       value="{{ tecnico.correo }}">
                 <br>
 
                 <b>Teléfono:</b> <br>
-                <input placeholder="Ingrese su teléfono (10 dígitos)"
-                       class="form-control" type="text"
-                       name="telefono" id="telefono"
-                       value="{{ tecnico.telefono }}"
-                       maxlength="10">
+                <input placeholder="10 dígitos" class="form-control"
+                       type="text" name="telefono" maxlength="10"
+                       value="{{ tecnico.telefono }}">
+                <br>
+
+                <b>Especialidad:</b> <br>
+                <select class="form-control" name="especialidad">
+                    <option value="">Seleccione...</option>
+                    {% for val, label in especialidades %}
+                        <option value="{{ val }}"
+                            {% if tecnico.especialidad == val %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
                 <br>
 
                 <b>Institución:</b> <br>
-                <input placeholder="Ingrese el nombre de su institución"
-                       class="form-control" type="text"
-                       name="institucion" id="institucion"
+                <input placeholder="Nombre de la institución" class="form-control"
+                       type="text" name="institucion"
                        value="{{ tecnico.institucion }}">
                 <br>
 
                 <b>Ciudad:</b> <br>
-                <input placeholder="Ingrese su ciudad"
-                       class="form-control" type="text"
-                       name="ciudad" id="ciudad"
+                <input placeholder="Ciudad" class="form-control"
+                       type="text" name="ciudad"
                        value="{{ tecnico.ciudad }}">
+                <br>
+
+                <b>Fecha de ingreso:</b> <br>
+                <input class="form-control" type="date"
+                       name="fecha_ingreso"
+                       value="{{ tecnico.fecha_ingreso }}">
                 <br>
 
                 <b>Fotografía:</b><br>
@@ -105,43 +108,51 @@
 
 {% block extra_js %}
 <script>
-$("#form_editar_perfil").validate({
-    rules: {
-        telefono: {
-            required: true,
-            digits: true,
-            minlength: 10,
-            maxlength: 10
+$(document).ready(function () {
+
+    jQuery.validator.addMethod("soloCedula", function (value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+    }, "La cédula debe tener exactamente 10 dígitos numéricos");
+
+    jQuery.validator.addMethod("soloTelefono", function (value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+    }, "El teléfono debe tener exactamente 10 dígitos");
+
+    $("#form_editar_perfil").validate({
+        errorElement: "span",
+        errorClass: "text-danger small",
+        highlight: function (element) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
         },
-        institucion: {
-            required: true,
-            minlength: 3,
-            maxlength: 150
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
         },
-        ciudad: {
-            required: true,
-            minlength: 2,
-            maxlength: 100
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        },
+        rules: {
+            cedula:       { required: true, soloCedula: true },
+            nombres:      { required: true, minlength: 2 },
+            apellidos:    { required: true, minlength: 2 },
+            correo:       { required: true, email: true },
+            telefono:     { required: true, soloTelefono: true },
+            especialidad: { required: true },
+            institucion:  { required: true, minlength: 3, maxlength: 150 },
+            ciudad:       { required: true, minlength: 2, maxlength: 100 },
+            fecha_ingreso:{ required: true }
+        },
+        messages: {
+            cedula:       { required: "Por favor, ingrese la cédula" },
+            nombres:      { required: "Por favor, ingrese sus nombres" },
+            apellidos:    { required: "Por favor, ingrese sus apellidos" },
+            correo:       { required: "Por favor, ingrese el correo", email: "Ingrese un correo válido" },
+            telefono:     { required: "Por favor, ingrese el teléfono" },
+            especialidad: { required: "Por favor, seleccione la especialidad" },
+            institucion:  { required: "Por favor, ingrese la institución" },
+            ciudad:       { required: "Por favor, ingrese la ciudad" },
+            fecha_ingreso:{ required: "Por favor, seleccione la fecha de ingreso" }
         }
-    },
-    messages: {
-        telefono: {
-            required: "Por favor, ingrese su teléfono",
-            digits: "Solo se permiten números",
-            minlength: "El teléfono debe tener exactamente 10 dígitos",
-            maxlength: "El teléfono debe tener exactamente 10 dígitos"
-        },
-        institucion: {
-            required: "Por favor, ingrese el nombre de su institución",
-            minlength: "La institución debe tener al menos 3 caracteres",
-            maxlength: "La institución no puede exceder 150 caracteres"
-        },
-        ciudad: {
-            required: "Por favor, ingrese su ciudad",
-            minlength: "La ciudad debe tener al menos 2 caracteres",
-            maxlength: "La ciudad no puede exceder 100 caracteres"
-        }
-    }
+    });
 });
 </script>
 {% endblock %}

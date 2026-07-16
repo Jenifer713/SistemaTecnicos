@@ -2,88 +2,314 @@
 {% load static %}
 
 {% block contenido %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <br>
+<style>
+    :root {
+        --azul:   #1E3A5F;
+        --verde:  #2ECC71;
+        --gris-f: #F4F6F9;
+        --gris-t: #555555;
+        --gris-c: #888888;
+    }
 
-            {% if valido %}
-            <h1><b>Certificado Verificado</b></h1>
-            <hr>
+    .ver-wrapper {
+        max-width: 700px;
+        margin: 30px auto 40px;
+        padding: 0 16px;
+    }
 
-            <center>
-                {% if qr_b64 %}
-                <img src="data:image/png;base64,{{ qr_b64 }}"
-                     alt="Código QR" style="width:150px; height:150px;">
-                {% endif %}
-                <p class="text-muted" style="font-size:0.85rem;">QR con los datos del certificado</p>
-            </center>
-            <br>
+    /* ── Tarjeta principal ───────────────────── */
+    .ver-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(30,58,95,.13);
+        position: relative;
+    }
+    .ver-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 6px;
+        height: 100%;
+        background: var(--verde);
+        border-radius: 12px 0 0 12px;
+    }
 
-            <!-- Datos en texto — lo que muestra al escanear -->
-            <div>
-                <hr>
-                <h5 style="text-transform:uppercase;"><b>TÉCNICO: {{ cert.participacion.tecnico.cedula }}</b></h5>
-                <hr>
-                <h5 style="text-transform:uppercase;"><b>{{ cert.participacion.tecnico.nombre_completo }}</b></h5>
-                <hr>
-                <h5><b>INSTITUCIÓN: </b>{{ cert.participacion.tecnico.institucion }}</h5>
-                <hr>
-                <h5><b>CURSO: </b>{{ cert.participacion.curso.nombre }}</h5>
-                <hr>
-                <h5><b>INSTRUCTOR: </b>{{ cert.participacion.curso.instructor }}</h5>
-                <hr>
-                <h5><b>DURACIÓN: </b>{{ cert.participacion.curso.duracion }} horas</h5>
-                <hr>
-                <h5><b>MODALIDAD: </b>{{ cert.participacion.curso.modalidad }}</h5>
-                <hr>
-                <h5><b>FECHA DE FINALIZACIÓN: </b>{{ cert.participacion.curso.fecha_fin }}</h5>
-                <hr>
-                <h5><b>NOTA FINAL: </b>{{ cert.participacion.nota_final }}</h5>
-                <hr>
-                <h5><b>CÓDIGO DE VERIFICACIÓN: </b>{{ cert.codigo }}</h5>
-                <hr>
-                <h5><b>FECHA DE EMISIÓN: </b>{{ cert.fecha_emision }}</h5>
-                <hr>
-                <h5><b>ESTADO: </b>
-                    <span class="badge badge-success" style="font-size:1rem;">
-                        ✓ CERTIFICADO VÁLIDO Y VERIFICADO
-                    </span>
-                </h5>
-                <hr>
+    /* ── Encabezado ──────────────────────────── */
+    .ver-header {
+        background: var(--azul);
+        padding: 20px 32px 14px;
+        border-bottom: 3px solid var(--verde);
+        text-align: center;
+    }
+    .ver-header h2 {
+        color: #fff;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+    .ver-header p {
+        color: rgba(255,255,255,.6);
+        font-size: 0.8rem;
+        margin: 4px 0 0;
+    }
+
+    /* ── Badge ───────────────────────────────── */
+    .ver-badge-ok {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--verde);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 5px 16px;
+        border-radius: 20px;
+        margin: 18px 0 10px;
+    }
+    .ver-badge-err {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e74c3c;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 5px 16px;
+        border-radius: 20px;
+        margin: 18px 0 10px;
+    }
+
+    /* ── Cuerpo ──────────────────────────────── */
+    .ver-body {
+        background: var(--gris-f);
+        padding: 20px 32px 24px;
+        text-align: center;
+    }
+
+    .ver-nombre {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: var(--azul);
+        margin: 4px 0 2px;
+    }
+
+    .ver-cedula {
+        font-size: 0.88rem;
+        color: var(--gris-t);
+        margin-bottom: 6px;
+    }
+
+    .ver-divider {
+        width: 60px;
+        height: 3px;
+        background: var(--verde);
+        margin: 8px auto 14px;
+        border-radius: 2px;
+    }
+
+    .ver-curso {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--azul);
+        font-style: italic;
+        margin-bottom: 16px;
+    }
+
+    /* ── Grid de datos ───────────────────────── */
+    .ver-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .ver-item {
+        background: #fff;
+        border: 1px solid #dde3ec;
+        border-radius: 8px;
+        padding: 10px 14px;
+    }
+    .ver-item .label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        color: var(--gris-c);
+        letter-spacing: 0.5px;
+        margin-bottom: 3px;
+    }
+    .ver-item .value {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--azul);
+    }
+
+    /* ── QR ──────────────────────────────────── */
+    .ver-qr {
+        margin: 10px 0 18px;
+    }
+    .ver-qr img {
+        width: 120px;
+        height: 120px;
+        border: 2px solid #dde3ec;
+        border-radius: 8px;
+        padding: 4px;
+        background: #fff;
+    }
+    .ver-qr p {
+        font-size: 0.75rem;
+        color: var(--gris-c);
+        margin-top: 4px;
+    }
+
+    /* ── Código al pie ───────────────────────── */
+    .ver-codigo {
+        font-size: 0.8rem;
+        color: var(--gris-c);
+        background: #fff;
+        border: 1px solid #dde3ec;
+        border-radius: 6px;
+        padding: 8px 16px;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+    .ver-codigo strong { color: var(--azul); }
+
+    /* ── Botones ─────────────────────────────── */
+    .ver-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* ── Error ───────────────────────────────── */
+    .ver-error-body {
+        padding: 28px 32px 24px;
+        text-align: center;
+    }
+    .ver-error-body .err-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+    .ver-error-body h4 {
+        color: #e74c3c;
+        margin-bottom: 8px;
+    }
+    .ver-error-body p {
+        color: var(--gris-t);
+        font-size: 0.92rem;
+    }
+    .ver-codigo-buscado {
+        display: inline-block;
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+        color: #b91c1c;
+        padding: 5px 14px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        margin: 10px 0 18px;
+    }
+</style>
+
+<div class="ver-wrapper">
+    {% if valido %}
+
+    <div class="ver-card">
+        <div class="ver-header">
+            <h2>Verificación de Certificado</h2>
+            <p>Sistema de Gestión de Técnicos en Tecnología</p>
+        </div>
+        <div class="ver-body">
+
+            <span class="ver-badge-ok">✓ Certificado válido y verificado</span>
+
+            <p class="ver-nombre">{{ cert.participacion.tecnico.nombre_completo }}</p>
+            <p class="ver-cedula">Cédula: {{ cert.participacion.tecnico.cedula }}
+                &nbsp;·&nbsp;
+                Institución: {{ cert.participacion.tecnico.institucion }}
+            </p>
+            <div class="ver-divider"></div>
+
+            <p class="ver-curso">"{{ cert.participacion.curso.nombre }}"</p>
+
+            <div class="ver-grid">
+                <div class="ver-item">
+                    <p class="label">Instructor</p>
+                    <p class="value">{{ cert.participacion.curso.instructor }}</p>
+                </div>
+                <div class="ver-item">
+                    <p class="label">Duración</p>
+                    <p class="value">{{ cert.participacion.curso.duracion }} horas</p>
+                </div>
+                <div class="ver-item">
+                    <p class="label">Modalidad</p>
+                    <p class="value">{{ cert.participacion.curso.modalidad }}</p>
+                </div>
+                <div class="ver-item">
+                    <p class="label">Finalización</p>
+                    <p class="value">{{ cert.participacion.curso.fecha_fin }}</p>
+                </div>
+                <div class="ver-item">
+                    <p class="label">Nota final</p>
+                    <p class="value">{{ cert.participacion.nota_final }}</p>
+                </div>
+                <div class="ver-item">
+                    <p class="label">Emisión</p>
+                    <p class="value">{{ cert.fecha_emision }}</p>
+                </div>
             </div>
 
-            <br>
-            <a href="/certificado/generar/{{ cert.participacion.id }}/"
-               class="btn btn-success mr-2">
-                <i class="ti-download mr-1"></i> Descargar PDF
-            </a>
-            <a href="/certificado/imprimir/{{ cert.participacion.id }}/"
-               class="btn btn-dark"
-               onclick="window.open(this.href,'Certificado','width=900,height=700,resizable=yes,scrollbars=yes'); return false;">
-                <i class="ti-printer mr-1"></i> Imprimir
-            </a>
-
-            {% else %}
-            <h1><b>Certificado No Encontrado</b></h1>
-            <hr>
-            <div class="alert alert-danger">
-                <h5>Código consultado: <strong>{{ codigo }}</strong></h5>
-                <p class="mb-0">
-                    No se encontró ningún certificado con este código en el sistema.
-                    El documento puede ser inválido o no haber sido emitido aquí.
-                </p>
+            <!-- QR -->
+            {% if qr_b64 %}
+            <div class="ver-qr">
+                <img src="data:image/png;base64,{{ qr_b64 }}" alt="Código QR">
+                <p>Escanear para verificar</p>
             </div>
-            <a href="/" class="btn btn-secondary">
-                <i class="ti-home mr-1"></i> Ir al inicio
-            </a>
             {% endif %}
 
-            <br>
+            <!-- Código -->
+            <div class="ver-codigo">
+                Código de verificación: <strong>{{ cert.codigo }}</strong>
+            </div>
+
+            <!-- Acciones -->
+            <div class="ver-actions">
+                <a href="/certificado/generar/{{ cert.participacion.id }}/"
+                   class="btn btn-success btn-sm">
+                    <i class="ti-download mr-1"></i> Descargar PDF
+                </a>
+                <a href="/certificado/imprimir/{{ cert.participacion.id }}/"
+                   class="btn btn-dark btn-sm"
+                   onclick="window.open(this.href,'Certificado','width=960,height=700,resizable=yes,scrollbars=yes'); return false;">
+                    <i class="ti-printer mr-1"></i> Imprimir
+                </a>
+            </div>
+
         </div>
     </div>
+
+    {% else %}
+
+    <div class="ver-card">
+        <div class="ver-header">
+            <h2>Verificación de Certificado</h2>
+            <p>Sistema de Gestión de Técnicos en Tecnología</p>
+        </div>
+        <div class="ver-error-body">
+            <div class="err-icon">🔍</div>
+            <span class="ver-badge-err">✗ Certificado no encontrado</span>
+            <p>No se encontró ningún certificado con el código:</p>
+            <div class="ver-codigo-buscado">{{ codigo }}</div>
+            <p>El documento puede ser inválido o no haber sido emitido en este sistema.</p>
+            <br>
+            <a href="/" class="btn btn-secondary btn-sm mt-2">
+                <i class="ti-home mr-1"></i> Ir al inicio
+            </a>
+        </div>
+    </div>
+
+    {% endif %}
 </div>
 {% endblock %}
-
-{% block extra_js %}{% endblock %}

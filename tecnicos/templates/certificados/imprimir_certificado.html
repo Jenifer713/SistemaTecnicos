@@ -6,88 +6,330 @@
     <title>Certificado {{ cert.codigo }}</title>
     <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
     <style>
-        body { font-family: 'Georgia', serif; background: #fff; margin: 0; padding: 20px; }
-        .certificado {
-            border: 8px solid #C86FFF;
+        /* ── Fuentes y base ─────────────────────────────────── */
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --azul:   #1E3A5F;
+            --verde:  #2ECC71;
+            --gris-f: #F4F6F9;
+            --gris-t: #555555;
+            --gris-c: #888888;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: #e8edf2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px 40px;
+            min-height: 100vh;
+        }
+
+        /* ── Tarjeta certificado ─────────────────────────────── */
+        .cert-card {
+            background: #fff;
+            width: 100%;
+            max-width: 860px;
             border-radius: 12px;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(30,58,95,.18);
             position: relative;
         }
-        .certificado::before {
+
+        /* ── Franja lateral izquierda verde ─────────────────── */
+        .cert-card::before {
             content: '';
             position: absolute;
-            top: 8px; left: 8px; right: 8px; bottom: 8px;
-            border: 2px solid #4255A4;
-            border-radius: 8px;
-            pointer-events: none;
+            top: 0; left: 0;
+            width: 8px;
+            height: 100%;
+            background: var(--verde);
+            border-radius: 12px 0 0 12px;
         }
-        .titulo { font-size: 2rem; color: #4255A4; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; }
-        .subtitulo { font-size: 1rem; color: #888; margin-bottom: 20px; }
-        .nombre-tecnico { font-size: 2rem; color: #C86FFF; font-weight: bold; border-bottom: 2px solid #C86FFF; display: inline-block; padding-bottom: 5px; margin: 10px 0; }
-        .nombre-curso { font-size: 1.4rem; color: #4255A4; font-style: italic; margin: 10px 0; }
-        .detalle { font-size: 1rem; color: #555; margin: 6px 0; }
-        .codigo { font-size: 0.85rem; color: #999; margin-top: 15px; }
-        .firma-line { border-top: 1px solid #4255A4; width: 220px; margin: 0 auto 5px; }
+
+        /* ── Encabezado azul ─────────────────────────────────── */
+        .cert-header {
+            background: var(--azul);
+            padding: 22px 40px 16px;
+            text-align: center;
+            border-bottom: 4px solid var(--verde);
+        }
+        .cert-header .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: #fff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .cert-header .subtitle {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,.65);
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        /* ── Cuerpo ──────────────────────────────────────────── */
+        .cert-body {
+            background: var(--gris-f);
+            padding: 32px 48px 24px;
+            text-align: center;
+        }
+
+        .cert-label {
+            font-size: 0.95rem;
+            color: var(--gris-t);
+            margin-bottom: 6px;
+        }
+
+        .cert-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.1rem;
+            color: var(--azul);
+            line-height: 1.2;
+        }
+
+        .cert-divider {
+            width: 80px;
+            height: 3px;
+            background: var(--verde);
+            margin: 10px auto 14px;
+            border-radius: 2px;
+        }
+
+        .cert-cedula {
+            font-size: 0.88rem;
+            color: var(--gris-t);
+            margin-bottom: 18px;
+        }
+
+        .cert-aprobado {
+            font-size: 0.98rem;
+            color: var(--gris-t);
+            margin-bottom: 6px;
+        }
+
+        .cert-curso {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--azul);
+            font-style: italic;
+            margin-bottom: 18px;
+        }
+
+        /* ── Grid de detalles ────────────────────────────────── */
+        .cert-details {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 24px;
+            margin-bottom: 24px;
+        }
+        .cert-detail-item {
+            background: #fff;
+            border: 1px solid #dde3ec;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            color: var(--gris-t);
+        }
+        .cert-detail-item strong {
+            color: var(--azul);
+        }
+
+        /* ── Fila inferior: firma + QR ───────────────────────── */
+        .cert-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 16px;
+            border-top: 1px solid #dde3ec;
+            padding-top: 18px;
+        }
+
+        .cert-firma {
+            text-align: center;
+            flex: 1;
+        }
+        .cert-firma .firma-linea {
+            width: 200px;
+            height: 1px;
+            background: var(--azul);
+            margin: 0 auto 6px;
+        }
+        .cert-firma .firma-nombre {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--azul);
+        }
+        .cert-firma .firma-rol {
+            font-size: 0.78rem;
+            color: var(--gris-c);
+        }
+
+        .cert-qr {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .cert-qr img {
+            width: 110px;
+            height: 110px;
+            border: 2px solid #dde3ec;
+            border-radius: 6px;
+            padding: 3px;
+            background: #fff;
+        }
+        .cert-qr .qr-label {
+            font-size: 0.72rem;
+            color: var(--gris-c);
+            margin-top: 4px;
+        }
+
+        /* ── Pie azul ────────────────────────────────────────── */
+        .cert-pie {
+            background: var(--azul);
+            padding: 10px 40px;
+            text-align: center;
+            border-top: 3px solid var(--verde);
+        }
+        .cert-pie p {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,.7);
+            margin: 0;
+        }
+        .cert-pie strong {
+            color: #fff;
+        }
+
+        /* ── Badge verificado ────────────────────────────────── */
+        .badge-verificado {
+            display: inline-block;
+            background: var(--verde);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        /* ── Botones de acción ───────────────────────────────── */
+        .cert-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn-cert {
+            padding: 9px 24px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity .2s;
+        }
+        .btn-cert:hover { opacity: .85; }
+        .btn-imprimir { background: var(--azul); color: #fff; }
+        .btn-cerrar   { background: #6c757d;     color: #fff; }
+
+        /* ── Print ───────────────────────────────────────────── */
         @media print {
-            button { display: none !important; }
-            .no-print { display: none !important; }
-            @page { margin: 1cm; }
-            body { padding: 0; }
+            body { background: #fff; padding: 0; }
+            .cert-card { box-shadow: none; border-radius: 0; }
+            .cert-actions { display: none !important; }
+            @page { margin: 1cm; size: A4 landscape; }
         }
     </style>
 </head>
 <body>
 
-<div class="certificado">
+<div class="cert-card">
 
-    <p class="titulo">Certificado de Aprobación</p>
-    <p class="subtitulo">Sistema de Gestión de Técnicos en Tecnología</p>
-
-    <p style="font-size:1rem; color:#555;">Se certifica que</p>
-    <p class="nombre-tecnico">{{ participacion.tecnico.nombre_completo }}</p>
-    <p style="font-size:1rem; color:#555;">con cédula <strong>{{ participacion.tecnico.cedula }}</strong></p>
-    <p style="font-size:1rem; color:#555;">ha aprobado satisfactoriamente el curso</p>
-    <p class="nombre-curso">"{{ participacion.curso.nombre }}"</p>
-
-    <p class="detalle"><strong>Instructor:</strong> {{ participacion.curso.instructor }}</p>
-    <p class="detalle"><strong>Duración:</strong> {{ participacion.curso.duracion }} horas &nbsp;|&nbsp; <strong>Modalidad:</strong> {{ participacion.curso.modalidad }}</p>
-    <p class="detalle"><strong>Fecha de finalización:</strong> {{ participacion.curso.fecha_fin }}</p>
-    <p class="detalle"><strong>Nota final:</strong> {{ participacion.nota_final }}</p>
-
-    <br>
-
-    <!-- Contenedor del QR — imagen generada en el servidor -->
-    <div style="display:inline-block; margin: 10px auto;">
-        {% if qr_b64 %}
-            <img src="data:image/png;base64,{{ qr_b64 }}"
-                 alt="Código QR de verificación"
-                 style="width:180px; height:180px;">
-        {% endif %}
-        <p style="font-size:0.75rem; color:#999; margin-top:3px;">Escanea para verificar</p>
+    <!-- Encabezado -->
+    <div class="cert-header">
+        <p class="title">Certificado de Aprobación</p>
+        <p class="subtitle">Sistema de Gestión de Técnicos en Tecnología</p>
     </div>
 
-    <br>
-    <div class="firma-line"></div>
-    <p style="font-size:0.9rem; color:#555; margin-top:5px;">{{ participacion.curso.instructor }}</p>
-    <p style="font-size:0.8rem; color:#888;">Instructor del curso</p>
+    <!-- Cuerpo -->
+    <div class="cert-body">
 
-    <p class="codigo">
-        Código de verificación: <strong>{{ cert.codigo }}</strong>
-        &nbsp;|&nbsp; Emitido: {{ cert.fecha_emision }}
-    </p>
+        <span class="badge-verificado">✓ Aprobado</span>
 
+        <p class="cert-label">Se certifica que</p>
+        <p class="cert-name">{{ participacion.tecnico.nombre_completo }}</p>
+        <div class="cert-divider"></div>
+        <p class="cert-cedula">Cédula: <strong>{{ participacion.tecnico.cedula }}</strong></p>
+
+        <p class="cert-aprobado">ha completado y aprobado satisfactoriamente el curso</p>
+        <p class="cert-curso">"{{ participacion.curso.nombre }}"</p>
+
+        <!-- Detalles -->
+        <div class="cert-details">
+            <div class="cert-detail-item">
+                <strong>Instructor:</strong> {{ participacion.curso.instructor }}
+            </div>
+            <div class="cert-detail-item">
+                <strong>Duración:</strong> {{ participacion.curso.duracion }} horas
+            </div>
+            <div class="cert-detail-item">
+                <strong>Modalidad:</strong> {{ participacion.curso.modalidad }}
+            </div>
+            <div class="cert-detail-item">
+                <strong>Finalización:</strong> {{ participacion.curso.fecha_fin }}
+            </div>
+            <div class="cert-detail-item">
+                <strong>Nota final:</strong> {{ participacion.nota_final }}
+            </div>
+        </div>
+
+        <!-- Firma + QR -->
+        <div class="cert-footer-row">
+            <div class="cert-firma">
+                <div class="firma-linea"></div>
+                <p class="firma-nombre">{{ participacion.curso.instructor }}</p>
+                <p class="firma-rol">Instructor del curso</p>
+            </div>
+            <div class="cert-qr">
+                {% if qr_b64 %}
+                    <img src="data:image/png;base64,{{ qr_b64 }}"
+                         alt="QR de verificación">
+                {% endif %}
+                <p class="qr-label">Escanear para verificar</p>
+            </div>
+        </div>
+
+    </div><!-- /cert-body -->
+
+    <!-- Pie -->
+    <div class="cert-pie">
+        <p>
+            Código: <strong>{{ cert.codigo }}</strong>
+            &nbsp;·&nbsp;
+            Emitido: <strong>{{ cert.fecha_emision }}</strong>
+        </p>
+    </div>
+
+</div><!-- /cert-card -->
+
+<!-- Botones (no se imprimen) -->
+<div class="cert-actions no-print">
+    <button class="btn-cert btn-imprimir" onclick="window.print()">
+        🖨️ Imprimir
+    </button>
+    <button class="btn-cert btn-cerrar" onclick="window.close()">
+        ✕ Cerrar
+    </button>
 </div>
-
-<br>
-<center class="no-print">
-    <button onclick="window.print();" class="btn btn-success mr-2">Imprimir</button>
-    <button onclick="window.close();" class="btn btn-secondary">Cerrar</button>
-</center>
-
-<!-- qrcode.js ya no se necesita — QR generado en el servidor -->
 
 </body>
 </html>

@@ -15,45 +15,50 @@
                   method="post">
                 {% csrf_token %}
 
+                <!-- ── Datos personales ───────────────────────────────── -->
+                <h5 class="mt-2 mb-3" style="color:#1E3A5F; border-bottom:2px solid #2ECC71; padding-bottom:6px;">
+                    <i class="ti-user mr-1"></i> Datos del Técnico
+                </h5>
+
                 <div class="row">
                     <div class="col-md-6">
-                        <b>Cédula:</b> <br>
-                        <input placeholder="10 dígitos" class="form-control"
+                        <b>Cédula:</b>
+                        <input placeholder="10 dígitos" class="form-control mt-1"
                                type="text" name="cedula" maxlength="10"
                                value="{{ tecnico.cedula|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Nombres:</b> <br>
-                        <input placeholder="Ingrese los nombres" class="form-control"
+                        <b>Nombres:</b>
+                        <input placeholder="Ingrese los nombres" class="form-control mt-1"
                                type="text" name="nombres"
                                value="{{ tecnico.nombres|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Apellidos:</b> <br>
-                        <input placeholder="Ingrese los apellidos" class="form-control"
+                        <b>Apellidos:</b>
+                        <input placeholder="Ingrese los apellidos" class="form-control mt-1"
                                type="text" name="apellidos"
                                value="{{ tecnico.apellidos|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Correo electrónico:</b> <br>
-                        <input placeholder="correo@ejemplo.com" class="form-control"
+                        <b>Correo electrónico:</b>
+                        <input placeholder="correo@ejemplo.com" class="form-control mt-1"
                                type="email" name="correo"
                                value="{{ tecnico.correo|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Teléfono:</b> <br>
-                        <input placeholder="10 dígitos" class="form-control"
+                        <b>Teléfono:</b>
+                        <input placeholder="10 dígitos" class="form-control mt-1"
                                type="text" name="telefono" maxlength="10"
                                value="{{ tecnico.telefono|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Especialidad:</b> <br>
-                        <select class="form-control" name="especialidad" id="especialidad">
+                        <b>Especialidad:</b>
+                        <select class="form-control mt-1" name="especialidad" id="especialidad">
                             <option value="">Seleccione...</option>
                             {% for val, label in especialidades %}
                                 <option value="{{ val }}"
@@ -65,37 +70,37 @@
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Institución:</b> <br>
-                        <input placeholder="Nombre de la institución" class="form-control"
+                        <b>Institución:</b>
+                        <input placeholder="Nombre de la institución" class="form-control mt-1"
                                type="text" name="institucion"
                                value="{{ tecnico.institucion|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Ciudad:</b> <br>
-                        <input placeholder="Ciudad" class="form-control"
+                        <b>Ciudad:</b>
+                        <input placeholder="Ciudad" class="form-control mt-1"
                                type="text" name="ciudad"
                                value="{{ tecnico.ciudad|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Fecha de ingreso:</b> <br>
-                        <input class="form-control" type="date"
+                        <b>Fecha de ingreso:</b>
+                        <input class="form-control mt-1" type="date"
                                name="fecha_ingreso"
                                value="{{ tecnico.fecha_ingreso|default:'' }}">
                         <br>
                     </div>
                     <div class="col-md-6">
-                        <b>Estado:</b> <br>
-                        <select class="form-control" name="estado">
+                        <b>Estado:</b>
+                        <select class="form-control mt-1" name="estado">
                             <option value="Activo"   {% if tecnico.estado == 'Activo'   or not tecnico %}selected{% endif %}>Activo</option>
                             <option value="Inactivo" {% if tecnico.estado == 'Inactivo' %}selected{% endif %}>Inactivo</option>
                         </select>
                         <br>
                     </div>
                     <div class="col-md-12">
-                        <b>Fotografía:</b><br>
-                        <input type="file" name="foto" id="foto" class="form-control"
+                        <b>Fotografía:</b>
+                        <input type="file" name="foto" id="foto" class="form-control mt-1"
                                accept=".jpg,.jpeg,.png"
                                {% if tecnico.foto %}
                                data-initial-preview="<img src='{{ tecnico.foto.url }}' class='file-preview-image'>"
@@ -106,7 +111,7 @@
                                 Foto actual:
                                 <a href="{{ tecnico.foto.url }}" target="_blank">
                                     <img src="{{ tecnico.foto.url }}"
-                                         style="height:35px; width:35px; border-radius:50%; margin-left:5px; vertical-align:middle;">
+                                         style="height:35px;width:35px;border-radius:50%;margin-left:5px;vertical-align:middle;">
                                     ver imagen
                                 </a>
                             </small>
@@ -115,6 +120,65 @@
                     </div>
                 </div>
 
+                <!-- ── Datos de acceso al sistema ─────────────────────── -->
+                <h5 class="mt-2 mb-3" style="color:#1E3A5F; border-bottom:2px solid #2ECC71; padding-bottom:6px;">
+                    <i class="ti-lock mr-1"></i>
+                    {% if tecnico %}
+                        Datos de acceso al sistema
+                        <small class="text-muted" style="font-size:0.8rem; font-weight:normal;">
+                            — Dejar en blanco para no modificar
+                        </small>
+                    {% else %}
+                        Datos de acceso al sistema
+                        <small class="text-danger" style="font-size:0.8rem; font-weight:normal;">
+                            * Obligatorio
+                        </small>
+                    {% endif %}
+                </h5>
+
+                {% if tecnico and tecnico.usuario %}
+                <div class="alert alert-info py-2 mb-3" style="font-size:0.88rem;">
+                    <i class="ti-info-alt mr-1"></i>
+                    Usuario actual: <strong>{{ tecnico.usuario.username }}</strong>
+                    — Deja los campos vacíos si no deseas cambiar el usuario o la contraseña.
+                </div>
+                {% elif tecnico and not tecnico.usuario %}
+                <div class="alert alert-warning py-2 mb-3" style="font-size:0.88rem;">
+                    <i class="ti-alert mr-1"></i>
+                    Este técnico aún no tiene cuenta de acceso.
+                    Completa los campos para asignarle una.
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <b>Usuario{% if not tecnico %} <span class="text-danger">*</span>{% endif %}:</b>
+                        <input placeholder="ej: juan.perez" class="form-control mt-1"
+                               type="text" name="username" id="username"
+                               value="{% if tecnico and tecnico.usuario %}{{ tecnico.usuario.username }}{% endif %}">
+                        <small class="text-muted">Solo letras, números y guión bajo (_)</small>
+                        <br>
+                    </div>
+                    <div class="col-md-4">
+                        <b>Contraseña{% if not tecnico %} <span class="text-danger">*</span>{% endif %}:</b>
+                        <input placeholder="{% if tecnico %}Nueva contraseña (opcional){% else %}Mínimo 6 caracteres{% endif %}"
+                               class="form-control mt-1"
+                               type="password" name="password" id="password"
+                               autocomplete="new-password">
+                        <small class="text-muted">Mínimo 6 caracteres</small>
+                        <br>
+                    </div>
+                    <div class="col-md-4">
+                        <b>Confirmar contraseña{% if not tecnico %} <span class="text-danger">*</span>{% endif %}:</b>
+                        <input placeholder="Repita la contraseña"
+                               class="form-control mt-1"
+                               type="password" name="password2" id="password2"
+                               autocomplete="new-password">
+                        <br>
+                    </div>
+                </div>
+
+                <hr>
                 <button class="btn btn-success" type="submit">
                     <i class="ti-save mr-1"></i>
                     {% if tecnico %}Actualizar{% else %}Guardar{% endif %}
@@ -133,6 +197,8 @@
 <script>
 $(document).ready(function () {
 
+    var esNuevo = {% if tecnico %}false{% else %}true{% endif %};
+
     jQuery.validator.addMethod("soloCedula", function (value, element) {
         return this.optional(element) || /^\d{10}$/.test(value);
     }, "La cédula debe tener exactamente 10 dígitos numéricos");
@@ -140,6 +206,59 @@ $(document).ready(function () {
     jQuery.validator.addMethod("soloTelefono", function (value, element) {
         return this.optional(element) || /^\d{10}$/.test(value);
     }, "El teléfono debe tener exactamente 10 dígitos");
+
+    jQuery.validator.addMethod("soloLetras", function (value, element) {
+        return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(value);
+    }, "Solo se permiten letras y espacios");
+
+    jQuery.validator.addMethod("noFuturo", function (value, element) {
+        if (!value) return true;
+        return new Date(value) <= new Date();
+    }, "La fecha de ingreso no puede ser futura");
+
+    jQuery.validator.addMethod("soloImagen", function (value, element) {
+        if (this.optional(element)) return true;
+        var ext = value.split('.').pop().toLowerCase();
+        return ['jpg', 'jpeg', 'png'].indexOf(ext) !== -1;
+    }, "Solo se permiten archivos JPG o PNG");
+
+    jQuery.validator.addMethod("pesoMaximo", function (value, element, param) {
+        return this.optional(element) || (element.files[0].size <= param);
+    }, "La imagen no puede superar 2 MB");
+
+    jQuery.validator.addMethod("passConfirm", function (value, element) {
+        // Solo valida si se escribió algo en contraseña
+        var pass = $("#password").val();
+        if (!pass) return true;
+        return value === pass;
+    }, "Las contraseñas no coinciden");
+
+    jQuery.validator.addMethod("soloUsuario", function (value, element) {
+        return this.optional(element) || /^[a-zA-Z0-9_]+$/.test(value);
+    }, "Solo letras, números y guión bajo (_)");
+
+    // Reglas dinámicas según crear/editar
+    var rules = {
+        cedula:       { required: true, soloCedula: true },
+        nombres:      { required: true, minlength: 2, maxlength: 100, soloLetras: true },
+        apellidos:    { required: true, minlength: 2, maxlength: 100, soloLetras: true },
+        correo:       { required: true, email: true },
+        telefono:     { required: true, soloTelefono: true },
+        especialidad: { required: true },
+        institucion:  { required: true, minlength: 3, maxlength: 150 },
+        ciudad:       { required: true, minlength: 2, maxlength: 100 },
+        fecha_ingreso:{ required: true, noFuturo: true },
+        estado:       { required: true },
+        foto:         { soloImagen: true, pesoMaximo: 2097152 },
+        username:     { required: esNuevo, minlength: 3, maxlength: 50, soloUsuario: true },
+        password:     { required: esNuevo, minlength: { param: 6, depends: function() { return $("#password").val().length > 0; } } },
+        password2:    { passConfirm: true }
+    };
+
+    if (esNuevo) {
+        rules.password  = { required: true, minlength: 6 };
+        rules.password2 = { required: true, passConfirm: true };
+    }
 
     $("#form_tecnico").validate({
         errorElement: "span",
@@ -153,29 +272,22 @@ $(document).ready(function () {
         errorPlacement: function (error, element) {
             error.insertAfter(element);
         },
-        rules: {
-            cedula:       { required: true, soloCedula: true },
-            nombres:      { required: true, minlength: 2 },
-            apellidos:    { required: true, minlength: 2 },
-            correo:       { required: true, email: true },
-            telefono:     { required: true, soloTelefono: true },
-            especialidad: { required: true },
-            institucion:  { required: true, minlength: 3, maxlength: 150 },
-            ciudad:       { required: true, minlength: 2, maxlength: 100 },
-            fecha_ingreso:{ required: true },
-            estado:       { required: true }
-        },
+        rules: rules,
         messages: {
             cedula:       { required: "Por favor, ingrese la cédula" },
-            nombres:      { required: "Por favor, ingrese los nombres", minlength: "Mínimo 2 caracteres" },
-            apellidos:    { required: "Por favor, ingrese los apellidos", minlength: "Mínimo 2 caracteres" },
+            nombres:      { required: "Por favor, ingrese los nombres", minlength: "Mínimo 2 caracteres", soloLetras: "Solo letras y espacios" },
+            apellidos:    { required: "Por favor, ingrese los apellidos", minlength: "Mínimo 2 caracteres", soloLetras: "Solo letras y espacios" },
             correo:       { required: "Por favor, ingrese el correo", email: "Ingrese un correo válido" },
             telefono:     { required: "Por favor, ingrese el teléfono" },
             especialidad: { required: "Por favor, seleccione la especialidad" },
             institucion:  { required: "Por favor, ingrese la institución", minlength: "Mínimo 3 caracteres", maxlength: "Máximo 150 caracteres" },
             ciudad:       { required: "Por favor, ingrese la ciudad", minlength: "Mínimo 2 caracteres" },
-            fecha_ingreso:{ required: "Por favor, seleccione la fecha de ingreso" },
-            estado:       { required: "Por favor, seleccione el estado" }
+            fecha_ingreso:{ required: "Por favor, seleccione la fecha de ingreso", noFuturo: "La fecha no puede ser futura" },
+            estado:       { required: "Por favor, seleccione el estado" },
+            foto:         { soloImagen: "Solo se permiten archivos JPG o PNG", pesoMaximo: "La imagen no puede superar 2 MB" },
+            username:     { required: "El usuario es obligatorio", minlength: "Mínimo 3 caracteres", soloUsuario: "Solo letras, números y guión bajo (_)" },
+            password:     { required: "La contraseña es obligatoria", minlength: "Mínimo 6 caracteres" },
+            password2:    { required: "Confirme la contraseña", passConfirm: "Las contraseñas no coinciden" }
         }
     });
 });

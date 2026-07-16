@@ -110,7 +110,13 @@
                     <div class="col-md-6">
                         <b>Contraseña:</b> <br>
                         <input placeholder="Mínimo 6 caracteres" class="form-control"
-                               type="password" name="password">
+                               type="password" name="password" id="password">
+                        <br>
+                    </div>
+                    <div class="col-md-6">
+                        <b>Confirmar contraseña:</b> <br>
+                        <input placeholder="Repita la contraseña" class="form-control"
+                               type="password" name="password2" id="password2">
                         <br>
                     </div>
                 </div>
@@ -166,8 +172,10 @@ $(document).ready(function () {
             institucion:  { required: true, minlength: 3 },
             ciudad:       { required: true, minlength: 2 },
             fecha_ingreso:{ required: true },
-            username:     { required: true, minlength: 3, maxlength: 50 },
-            password:     { required: true, minlength: 6 }
+            username:     { required: true, minlength: 3, maxlength: 50,
+                            pattern: /^[a-zA-Z0-9_]+$/ },
+            password:     { required: true, minlength: 6 },
+            password2:    { required: true, equalTo: '#password' }
         },
         messages: {
             cedula:       { required: "La cédula es obligatoria" },
@@ -179,8 +187,10 @@ $(document).ready(function () {
             institucion:  { required: "La institución es obligatoria" },
             ciudad:       { required: "La ciudad es obligatoria" },
             fecha_ingreso:{ required: "La fecha de ingreso es obligatoria" },
-            username:     { required: "El usuario es obligatorio", minlength: "Mínimo 3 caracteres" },
-            password:     { required: "La contraseña es obligatoria", minlength: "Mínimo 6 caracteres" }
+            username:     { required: "El usuario es obligatorio", minlength: "Mínimo 3 caracteres",
+                            pattern: "Solo letras, números y guión bajo (_)" },
+            password:     { required: "La contraseña es obligatoria", minlength: "Mínimo 6 caracteres" },
+            password2:    { required: "Por favor, confirme su contraseña", equalTo: "Las contraseñas no coinciden" }
         }
     });
 });

@@ -5,7 +5,6 @@
 
 {% block contenido %}
 
-<!-- Hero igual al inicio pero con mensaje de bienvenida -->
 <section class="slider-area">
     <div class="slider-active">
         <div class="single-slider slider-height d-flex align-items-center">
@@ -15,13 +14,11 @@
                         <div class="hero__caption">
                             {% if es_admin %}
                             <h1>Panel de<br>Administrador</h1>
-                            <p>Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
-                               &nbsp;|&nbsp; {{ fecha_hoy }}</p>
                             {% else %}
                             <h1>Mis Cursos</h1>
+                            {% endif %}
                             <p>Bienvenido/a, <b>{{ request.user.get_full_name|default:request.user.username }}</b>
                                &nbsp;|&nbsp; {{ fecha_hoy }}</p>
-                            {% endif %}
                             <a href="/logout/" class="btn hero-btn">
                                 <i class="ti-power-off mr-1"></i> Cerrar Sesión
                             </a>
@@ -33,27 +30,25 @@
     </div>
 </section>
 
-<!-- Contenido del panel -->
 <div class="services-area" style="padding: 40px 0;">
     <div class="container">
 
         {% if es_admin %}
         <!-- ══ ADMIN ══ -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <p><b>Total Técnicos:</b> {{ total_tecnicos }}
-                &nbsp;<a href="/tecnicos/" class="btn btn-sm btn-outline-primary">Ver</a></p>
+        <div class="row mb-3">
+            <div class="col-md-4 mb-2">
+                <b>Total Técnicos:</b> {{ total_tecnicos }}
+                &nbsp;<a href="/tecnicos/" class="btn btn-sm btn-outline-primary">Ver</a>
             </div>
-            <div class="col-md-4 mb-3">
-                <p><b>Cursos Activos:</b> {{ total_cursos }}
-                &nbsp;<a href="/cursos/" class="btn btn-sm btn-outline-success">Ver</a></p>
+            <div class="col-md-4 mb-2">
+                <b>Cursos Activos:</b> {{ total_cursos }}
+                &nbsp;<a href="/cursos/" class="btn btn-sm btn-outline-success">Ver</a>
             </div>
-            <div class="col-md-4 mb-3">
-                <p><b>Certificados:</b> {{ total_certificados }}
-                &nbsp;<a href="/participaciones/" class="btn btn-sm btn-outline-warning">Ver</a></p>
+            <div class="col-md-4 mb-2">
+                <b>Certificados:</b> {{ total_certificados }}
+                &nbsp;<a href="/participaciones/" class="btn btn-sm btn-outline-warning">Ver</a>
             </div>
         </div>
-
         <hr>
         <h5><b>Acciones rápidas</b></h5>
         <a href="/tecnicos/nuevo/" class="btn btn-success mr-2 mb-3">
@@ -66,17 +61,12 @@
             <i class="ti-plus mr-1"></i> Inscribir Técnico
         </a>
         <hr>
-
         <h5><b>Últimas participaciones</b></h5>
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead style="background:#4255A4; color:#fff;">
                     <tr>
-                        <th>TÉCNICO</th>
-                        <th>CURSO</th>
-                        <th>NOTA</th>
-                        <th>ESTADO</th>
-                        <th>CERTIFICADO</th>
+                        <th>TÉCNICO</th><th>CURSO</th><th>NOTA</th><th>ESTADO</th><th>CERTIFICADO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,36 +76,28 @@
                         <td>{{ p.curso.nombre }}</td>
                         <td>{{ p.nota_final|default:"—" }}</td>
                         <td>
-                            {% if p.estado == 'Aprobado' %}
-                                <span class="badge badge-success">Aprobado</span>
-                            {% elif p.estado == 'Reprobado' %}
-                                <span class="badge badge-danger">Reprobado</span>
-                            {% else %}
-                                <span class="badge badge-info">{{ p.estado }}</span>
-                            {% endif %}
+                            {% if p.estado == 'Aprobado' %}<span class="badge badge-success">Aprobado</span>
+                            {% elif p.estado == 'Reprobado' %}<span class="badge badge-danger">Reprobado</span>
+                            {% else %}<span class="badge badge-info">{{ p.estado }}</span>{% endif %}
                         </td>
                         <td>
                             {% if p.estado == 'Aprobado' %}
-                                <a href="/certificado/generar/{{ p.id }}/"
-                                   class="btn btn-outline-success btn-sm">
+                                <a href="/certificado/generar/{{ p.id }}/" class="btn btn-outline-success btn-sm">
                                     <i class="ti-download"></i> PDF
                                 </a>
-                                <a href="/certificado/imprimir/{{ p.id }}/"
-                                   class="btn btn-outline-dark btn-sm"
+                                <a href="/certificado/imprimir/{{ p.id }}/" class="btn btn-outline-dark btn-sm"
                                    onclick="window.open(this.href,'Cert','width=900,height=700'); return false;">
                                     <i class="ti-printer"></i> Imprimir
                                 </a>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
+                                <a href="/certificado/enviar/{{ p.id }}/" class="btn btn-outline-info btn-sm"
+                                   onclick="return confirm('¿Enviar el certificado al correo {{ p.tecnico.correo|escapejs }}?')">
+                                    <i class="ti-email"></i> Compartir
+                                </a>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
                         </td>
                     </tr>
                 {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">
-                            No hay participaciones registradas aún.
-                        </td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center text-muted">No hay participaciones registradas aún.</td></tr>
                 {% endfor %}
                 </tbody>
             </table>
@@ -130,16 +112,11 @@
             <i class="ti-user mr-1"></i> Mi Perfil
         </a>
         <br>
-
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead style="background:#4255A4; color:#fff;">
                     <tr>
-                        <th>CURSO</th>
-                        <th>FECHA INSCRIPCIÓN</th>
-                        <th>NOTA</th>
-                        <th>ESTADO</th>
-                        <th>CERTIFICADO</th>
+                        <th>CURSO</th><th>FECHA INSCRIPCIÓN</th><th>NOTA</th><th>ESTADO</th><th>CERTIFICADO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -149,38 +126,29 @@
                         <td>{{ p.fecha_inscripcion }}</td>
                         <td>{{ p.nota_final|default:"—" }}</td>
                         <td>
-                            {% if p.estado == 'Aprobado' %}
-                                <span class="badge badge-success">Aprobado</span>
-                            {% elif p.estado == 'Reprobado' %}
-                                <span class="badge badge-danger">Reprobado</span>
-                            {% elif p.estado == 'Retirado' %}
-                                <span class="badge badge-secondary">Retirado</span>
-                            {% else %}
-                                <span class="badge badge-info">Inscrito</span>
-                            {% endif %}
+                            {% if p.estado == 'Aprobado' %}<span class="badge badge-success">Aprobado</span>
+                            {% elif p.estado == 'Reprobado' %}<span class="badge badge-danger">Reprobado</span>
+                            {% elif p.estado == 'Retirado' %}<span class="badge badge-secondary">Retirado</span>
+                            {% else %}<span class="badge badge-info">Inscrito</span>{% endif %}
                         </td>
                         <td>
                             {% if p.estado == 'Aprobado' %}
-                                <a href="/certificado/generar/{{ p.id }}/"
-                                   class="btn btn-outline-success btn-sm">
-                                    <i class="ti-download mr-1"></i> Descargar PDF
+                                <a href="/certificado/generar/{{ p.id }}/" class="btn btn-outline-success btn-sm">
+                                    <i class="ti-download mr-1"></i> PDF
                                 </a>
-                                <a href="/certificado/imprimir/{{ p.id }}/"
-                                   class="btn btn-outline-dark btn-sm"
+                                <a href="/certificado/imprimir/{{ p.id }}/" class="btn btn-outline-dark btn-sm"
                                    onclick="window.open(this.href,'Certificado','width=900,height=700,resizable=yes'); return false;">
                                     <i class="ti-printer mr-1"></i> Imprimir
                                 </a>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
+                                <a href="/certificado/enviar/{{ p.id }}/" class="btn btn-outline-info btn-sm"
+                                   onclick="return confirm('¿Enviar el certificado a tu correo {{ request.user.email|escapejs }}?')">
+                                    <i class="ti-email mr-1"></i> Compartir
+                                </a>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
                         </td>
                     </tr>
                 {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center py-3 text-muted">
-                            No tienes participaciones registradas aún.
-                        </td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center py-3 text-muted">No tienes participaciones registradas aún.</td></tr>
                 {% endfor %}
                 </tbody>
             </table>
@@ -189,5 +157,4 @@
 
     </div>
 </div>
-
 {% endblock %}

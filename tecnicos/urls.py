@@ -32,10 +32,11 @@ urlpatterns = [
     path('participaciones/eliminar/<int:pk>/', views.eliminar_participacion,  name='eliminar_participacion'),
 
     # ── CERTIFICADOS ──
-    path('certificado/generar/<int:pk>/',   views.generar_certificado,      name='generar_certificado'),
-    path('certificado/imprimir/<int:pk>/',  views.imprimir_certificado,     name='imprimir_certificado'),
-    path('verificar/<str:codigo>/',         views.verificar_certificado,    name='verificar_certificado'),
-    path('reporte-participaciones/',        views.reporte_participaciones,  name='reporte_participaciones'),
+    path('certificado/generar/<int:pk>/',   views.generar_certificado,       name='generar_certificado'),
+    path('certificado/imprimir/<int:pk>/',  views.imprimir_certificado,      name='imprimir_certificado'),
+    path('certificado/enviar/<int:pk>/',    views.enviar_certificado_email,  name='enviar_certificado_email'),
+    path('verificar/<str:codigo>/',         views.verificar_certificado,     name='verificar_certificado'),
+    path('reporte-participaciones/',        views.reporte_participaciones,   name='reporte_participaciones'),
 
     # ── PERFIL TÉCNICO ──
     path('perfil/', views.perfil_tecnico, name='perfil_tecnico'),
