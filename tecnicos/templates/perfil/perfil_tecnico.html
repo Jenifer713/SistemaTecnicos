@@ -68,10 +68,12 @@
                        value="{{ tecnico.ciudad }}">
                 <br>
 
-                <b>Fecha de ingreso:</b> <br>
-                <input class="form-control" type="date"
-                       name="fecha_ingreso"
-                       value="{{ tecnico.fecha_ingreso }}">
+                <b>Fecha de ingreso:</b>
+                <input class="form-control mt-1" type="text"
+                       value="{{ tecnico.fecha_ingreso }}"
+                       readonly
+                       style="background:#f4f6f9; color:#555; cursor:not-allowed;">
+                <small class="text-muted">La fecha de ingreso no puede modificarse.</small>
                 <br>
 
                 <b>Fotografía:</b><br>
@@ -139,7 +141,7 @@ $(document).ready(function () {
             especialidad: { required: true },
             institucion:  { required: true, minlength: 3, maxlength: 150 },
             ciudad:       { required: true, minlength: 2, maxlength: 100 },
-            fecha_ingreso:{ required: true }
+            fecha_ingreso:{ },  // solo lectura, no se valida
         },
         messages: {
             cedula:       { required: "Por favor, ingrese la cédula" },

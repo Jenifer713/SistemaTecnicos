@@ -85,9 +85,11 @@
                     </div>
                     <div class="col-md-6">
                         <b>Fecha de ingreso:</b>
-                        <input class="form-control mt-1" type="date"
-                               name="fecha_ingreso"
-                               value="{{ tecnico.fecha_ingreso|default:'' }}">
+                        <input class="form-control mt-1" type="text"
+                               value="{{ tecnico.fecha_ingreso|default:'' }}"
+                               readonly
+                               style="background:#f4f6f9; color:#555; cursor:not-allowed;">
+                        <small class="text-muted">La fecha de ingreso no puede modificarse.</small>
                         <br>
                     </div>
                     <div class="col-md-6">
@@ -247,7 +249,7 @@ $(document).ready(function () {
         especialidad: { required: true },
         institucion:  { required: true, minlength: 3, maxlength: 150 },
         ciudad:       { required: true, minlength: 2, maxlength: 100 },
-        fecha_ingreso:{ required: true, noFuturo: true },
+        fecha_ingreso:{ required: esNuevo, noFuturo: true },
         estado:       { required: true },
         foto:         { soloImagen: true, pesoMaximo: 2097152 },
         username:     { required: esNuevo, minlength: 3, maxlength: 50, soloUsuario: true },

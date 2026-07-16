@@ -1,0 +1,501 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Certificado{% if cert %} — {{ cert.codigo }}{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Variables ─────────────────────────────────── */
+        :root {
+            --azul:      #1B4F72;
+            --azul-med:  #2E86C1;
+            --dorado:    #B7950B;
+            --dorado-cl: #F9E79F;
+            --gris-bg:   #ECF0F1;
+            --gris-txt:  #566573;
+            --gris-brd:  #D5D8DC;
+            --blanco:    #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--gris-bg);
+            min-height: 100vh;
+            padding: 28px 16px 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ─── Wrapper página ─────────────────────────────── */
+        .page-wrap {
+            width: 100%;
+            max-width: 860px;
+        }
+
+        /* ─── Tarjeta certificado ────────────────────────── */
+        .cert {
+            background: var(--blanco);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(27,79,114,.15), 0 1px 4px rgba(0,0,0,.08);
+            border: 1px solid var(--gris-brd);
+            position: relative;
+        }
+
+        /* Borde dorado superior e inferior */
+        .cert::before,
+        .cert::after {
+            content: '';
+            display: block;
+            height: 5px;
+            background: linear-gradient(90deg, var(--dorado) 0%, #F4D03F 50%, var(--dorado) 100%);
+        }
+
+        /* ─── Encabezado ─────────────────────────────────── */
+        .cert-head {
+            background: var(--azul);
+            padding: 26px 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .cert-head::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--dorado) 0%, #F4D03F 50%, var(--dorado) 100%);
+        }
+        .cert-head .org {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,.55);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .cert-head .titulo {
+            font-family: 'Merriweather', serif;
+            font-size: 1.65rem;
+            color: var(--blanco);
+            letter-spacing: 1px;
+        }
+        .cert-head .titulo span {
+            color: var(--dorado-cl);
+        }
+
+        /* ─── Cuerpo ─────────────────────────────────────── */
+        .cert-body {
+            padding: 32px 48px 28px;
+            text-align: center;
+            background: var(--blanco);
+        }
+
+        .cert-se-certifica {
+            font-size: 0.92rem;
+            color: var(--gris-txt);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .cert-nombre {
+            font-family: 'Merriweather', serif;
+            font-size: 2rem;
+            color: var(--azul);
+            line-height: 1.25;
+            margin-bottom: 4px;
+        }
+
+        .cert-cedula {
+            font-size: 0.82rem;
+            color: var(--gris-txt);
+            margin-bottom: 16px;
+        }
+
+        /* Ornamento central */
+        .cert-ornamento {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto 18px;
+            max-width: 420px;
+        }
+        .cert-ornamento-linea {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--dorado), transparent);
+        }
+        .cert-ornamento-icono {
+            font-size: 1.1rem;
+            color: var(--dorado);
+        }
+
+        .cert-ha-aprobado {
+            font-size: 0.9rem;
+            color: var(--gris-txt);
+            margin-bottom: 6px;
+        }
+
+        .cert-curso {
+            font-family: 'Merriweather', serif;
+            font-size: 1.3rem;
+            color: var(--azul-med);
+            font-style: italic;
+            margin-bottom: 22px;
+            line-height: 1.4;
+        }
+
+        /* ─── Tarjetas de detalle ────────────────────────── */
+        .cert-detalles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .cert-det {
+            background: #F8F9FA;
+            border: 1px solid var(--gris-brd);
+            border-top: 2px solid var(--azul-med);
+            border-radius: 4px;
+            padding: 8px 16px;
+            min-width: 120px;
+            text-align: center;
+        }
+        .cert-det .det-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--gris-txt);
+            margin-bottom: 3px;
+        }
+        .cert-det .det-val {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--azul);
+        }
+
+        /* ─── Fila firma + QR ────────────────────────────── */
+        .cert-pie-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            border-top: 1px solid var(--gris-brd);
+            padding-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cert-firma {
+            text-align: center;
+            flex: 1;
+            min-width: 160px;
+        }
+        .cert-firma .firma-linea {
+            width: 180px;
+            height: 1px;
+            background: var(--azul);
+            margin: 0 auto 6px;
+        }
+        .cert-firma .firma-nombre {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--azul);
+        }
+        .cert-firma .firma-rol {
+            font-size: 0.72rem;
+            color: var(--gris-txt);
+        }
+
+        .cert-qr {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .cert-qr img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--gris-brd);
+            border-radius: 4px;
+            padding: 3px;
+            background: #fff;
+            display: block;
+            margin: 0 auto 4px;
+        }
+        .cert-qr .qr-txt {
+            font-size: 0.65rem;
+            color: var(--gris-txt);
+        }
+
+        /* ─── Pie (código) ───────────────────────────────── */
+        .cert-codigo-bar {
+            background: #F4F6F8;
+            border-top: 1px solid var(--gris-brd);
+            padding: 10px 40px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--gris-txt);
+        }
+        .cert-codigo-bar strong { color: var(--azul); }
+
+        /* ─── Badge estado ───────────────────────────────── */
+        .badge-aprobado {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #EAFAF1;
+            border: 1px solid #A9DFBF;
+            color: #1E8449;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ─── Barra de acciones (debajo del certificado) ─── */
+        .action-bar {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-accion {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 20px;
+            border-radius: 4px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: filter .15s, transform .1s;
+        }
+        .btn-accion:hover { filter: brightness(.9); transform: translateY(-1px); }
+        .btn-accion:active { transform: translateY(0); }
+        .btn-imprimir  { background: var(--azul);     color: #fff; }
+        .btn-descargar { background: var(--azul-med); color: #fff; }
+        .btn-compartir { background: #27AE60;          color: #fff; }
+        .btn-volver    { background: #7F8C8D;          color: #fff; }
+
+        /* ─── Página de error ────────────────────────────── */
+        .cert-error {
+            text-align: center;
+            padding: 40px 32px;
+        }
+        .cert-error .err-icono { font-size: 3.5rem; margin-bottom: 12px; }
+        .cert-error h3 { color: #C0392B; margin-bottom: 10px; }
+        .cert-error p  { color: var(--gris-txt); font-size: 0.92rem; }
+        .cod-buscado {
+            display: inline-block;
+            background: #FDEDEC;
+            border: 1px solid #F5B7B1;
+            color: #922B21;
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 10px 0 18px;
+        }
+
+        /* ─── Impresión ──────────────────────────────────── */
+        @media print {
+            body        { background: #fff; padding: 0; }
+            .cert       { box-shadow: none; }
+            .action-bar { display: none !important; }
+            @page       { margin: 0.8cm; size: A4 landscape; }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+{% if valido or modo != 'verificar' %}
+{% if participacion %}
+
+<!-- ══════════════════ CERTIFICADO ══════════════════ -->
+<div class="cert">
+
+    <!-- Encabezado -->
+    <div class="cert-head">
+        <p class="org">Sistema de Gestión de Técnicos en Tecnología</p>
+        <h1 class="titulo">Certificado de <span>Aprobación</span></h1>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="cert-body">
+
+        <span class="badge-aprobado">&#10003; Aprobado</span>
+
+        <p class="cert-se-certifica">Se certifica que</p>
+        <h2 class="cert-nombre">{{ participacion.tecnico.nombre_completo }}</h2>
+        <p class="cert-cedula">C.I.: {{ participacion.tecnico.cedula }}
+            &nbsp;·&nbsp;
+            {{ participacion.tecnico.institucion }}
+        </p>
+
+        <div class="cert-ornamento">
+            <div class="cert-ornamento-linea"></div>
+            <span class="cert-ornamento-icono">✦</span>
+            <div class="cert-ornamento-linea"></div>
+        </div>
+
+        <p class="cert-ha-aprobado">ha completado y aprobado satisfactoriamente el curso</p>
+        <p class="cert-curso">"{{ participacion.curso.nombre }}"</p>
+
+        <!-- Detalles -->
+        <div class="cert-detalles">
+            <div class="cert-det">
+                <p class="det-label">Instructor</p>
+                <p class="det-val">{{ participacion.curso.instructor }}</p>
+            </div>
+            <div class="cert-det">
+                <p class="det-label">Duración</p>
+                <p class="det-val">{{ participacion.curso.duracion }} horas</p>
+            </div>
+            <div class="cert-det">
+                <p class="det-label">Modalidad</p>
+                <p class="det-val">{{ participacion.curso.modalidad }}</p>
+            </div>
+            <div class="cert-det">
+                <p class="det-label">Finalización</p>
+                <p class="det-val">{{ participacion.curso.fecha_fin }}</p>
+            </div>
+            <div class="cert-det">
+                <p class="det-label">Nota final</p>
+                <p class="det-val">{{ participacion.nota_final }}</p>
+            </div>
+            <div class="cert-det">
+                <p class="det-label">Emisión</p>
+                <p class="det-val">{{ cert.fecha_emision }}</p>
+            </div>
+        </div>
+
+        <!-- Firma + QR -->
+        <div class="cert-pie-row">
+            <div class="cert-firma">
+                <div class="firma-linea"></div>
+                <p class="firma-nombre">{{ participacion.curso.instructor }}</p>
+                <p class="firma-rol">Instructor del curso</p>
+            </div>
+            {% if qr_b64 %}
+            <div class="cert-qr">
+                <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR verificación">
+                <p class="qr-txt">Escanear para verificar</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div><!-- /cert-body -->
+
+    <!-- Barra de código -->
+    <div class="cert-codigo-bar">
+        Código: <strong>{{ cert.codigo }}</strong>
+        &nbsp;·&nbsp;
+        Verificar en:
+        <strong>{{ url_verificacion }}</strong>
+    </div>
+
+</div><!-- /cert -->
+
+<!-- Barra de acciones (no se imprime) -->
+<div class="action-bar">
+    <button class="btn-accion btn-imprimir" onclick="window.print()">
+        🖨️ Imprimir
+    </button>
+    <button class="btn-accion btn-descargar" onclick="descargarPDF()">
+        ⬇️ Guardar PDF
+    </button>
+    <button class="btn-accion btn-compartir" onclick="compartirCert()">
+        🔗 Compartir enlace
+    </button>
+    <button class="btn-accion btn-volver" onclick="window.close()">
+        ✕ Cerrar
+    </button>
+</div>
+
+{% endif %}
+{% else %}
+
+<!-- ══════════════════ ERROR ══════════════════ -->
+<div class="cert">
+    <div class="cert-head">
+        <p class="org">Sistema de Gestión de Técnicos en Tecnología</p>
+        <h1 class="titulo">Verificación de <span>Certificado</span></h1>
+    </div>
+    <div class="cert-error">
+        <div class="err-icono">🔍</div>
+        <h3>Certificado no encontrado</h3>
+        <p>No existe ningún certificado con el código:</p>
+        <div class="cod-buscado">{{ codigo }}</div>
+        <p>El documento puede ser inválido o no haber sido emitido en este sistema.</p>
+        <br>
+        <a href="/" class="btn-accion btn-volver" style="display:inline-flex; text-decoration:none;">
+            ← Ir al inicio
+        </a>
+    </div>
+</div>
+
+{% endif %}
+
+</div><!-- /page-wrap -->
+
+<script>
+    // ── Guardar como PDF: usa impresión del navegador con destino "Guardar como PDF" ──
+    function descargarPDF() {
+        // Ocultamos temporalmente el action-bar para que no aparezca al guardar
+        document.querySelector('.action-bar').style.display = 'none';
+        window.print();
+        setTimeout(function() {
+            document.querySelector('.action-bar').style.display = '';
+        }, 1500);
+    }
+
+    // ── Compartir enlace de verificación ──
+    function compartirCert() {
+        var url = "{{ url_verificacion }}";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+                mostrarToast('✓ Enlace copiado al portapapeles');
+            }).catch(function() {
+                prompt('Copia este enlace de verificación:', url);
+            });
+        } else {
+            prompt('Copia este enlace de verificación:', url);
+        }
+    }
+
+    // ── Toast simple ──
+    function mostrarToast(msg) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = [
+            'position:fixed', 'bottom:28px', 'left:50%', 'transform:translateX(-50%)',
+            'background:#1B4F72', 'color:#fff', 'padding:10px 22px', 'border-radius:4px',
+            'font-size:.85rem', 'font-weight:600', 'z-index:9999',
+            'box-shadow:0 4px 12px rgba(0,0,0,.2)', 'transition:opacity .3s'
+        ].join(';');
+        document.body.appendChild(t);
+        setTimeout(function() { t.style.opacity = '0'; }, 2200);
+        setTimeout(function() { document.body.removeChild(t); }, 2600);
+    }
+
+    // ── Si el modo es 'imprimir', abrir diálogo de impresión automáticamente ──
+    {% if modo == 'imprimir' %}
+    window.addEventListener('load', function() {
+        setTimeout(function() { window.print(); }, 400);
+    });
+    {% endif %}
+</script>
+
+</body>
+</html>

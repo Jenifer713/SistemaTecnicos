@@ -283,7 +283,7 @@ def editar_tecnico(request, pk):
         especialidad  = request.POST.get('especialidad', '').strip()
         institucion   = request.POST.get('institucion', '').strip()
         ciudad        = request.POST.get('ciudad', '').strip()
-        fecha_ingreso = request.POST.get('fecha_ingreso', '').strip()
+        # fecha_ingreso NO se recibe del POST — siempre conserva el valor original
         estado        = request.POST.get('estado', 'Activo')
         foto          = request.FILES.get('foto', None)
 
@@ -318,9 +318,6 @@ def editar_tecnico(request, pk):
         if not ciudad or len(ciudad) < 2:
             errores.append('La ciudad debe tener al menos 2 caracteres.')
 
-        err = _validar_fecha_no_futura(fecha_ingreso)
-        if err: errores.append(err)
-
         err = _validar_foto(foto)
         if err: errores.append(err)
 
@@ -353,7 +350,6 @@ def editar_tecnico(request, pk):
         else:
             # Actualizar o crear el usuario Django
             if tecnico.usuario:
-                # Ya tiene usuario — actualizar datos
                 user = tecnico.usuario
                 if username:
                     user.username = username
@@ -364,7 +360,6 @@ def editar_tecnico(request, pk):
                     user.set_password(nueva_pass)
                 user.save()
             else:
-                # No tiene usuario — crearlo si se proporcionó username
                 if username and nueva_pass:
                     user = User.objects.create_user(
                         username=username,
@@ -375,17 +370,16 @@ def editar_tecnico(request, pk):
                     )
                     tecnico.usuario = user
 
-            # Actualizar el técnico
-            tecnico.cedula        = cedula
-            tecnico.nombres       = nombres
-            tecnico.apellidos     = apellidos
-            tecnico.correo        = correo
-            tecnico.telefono      = telefono
-            tecnico.especialidad  = especialidad
-            tecnico.institucion   = institucion
-            tecnico.ciudad        = ciudad
-            tecnico.fecha_ingreso = fecha_ingreso
-            tecnico.estado        = estado
+            # Actualizar el técnico — fecha_ingreso NO se toca, conserva el valor en BD
+            tecnico.cedula       = cedula
+            tecnico.nombres      = nombres
+            tecnico.apellidos    = apellidos
+            tecnico.correo       = correo
+            tecnico.telefono     = telefono
+            tecnico.especialidad = especialidad
+            tecnico.institucion  = institucion
+            tecnico.ciudad       = ciudad
+            tecnico.estado       = estado
             if foto:
                 tecnico.foto = foto
             tecnico.save()
@@ -864,7 +858,7 @@ def _generar_pdf_certificado(participacion, cert, url_verificacion):
 
 @login_required(login_url='/login/')
 def generar_certificado(request, pk):
-    """Descarga el PDF del certificado."""
+    """Muestra el certificado HTML con opción de descarga/guardar como PDF."""
     participacion = get_object_or_404(Participacion, pk=pk)
 
     if participacion.estado != 'Aprobado':
@@ -878,13 +872,34 @@ def generar_certificado(request, pk):
         except Tecnico.DoesNotExist:
             raise Http404
 
+    import base64
     cert = _obtener_o_crear_certificado(participacion)
     url_verificacion = request.build_absolute_uri(f'/verificar/{cert.codigo}/')
 
-    buf = _generar_pdf_certificado(participacion, cert, url_verificacion)
-    response = HttpResponse(buf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="certificado_{cert.codigo}.pdf"'
-    return response
+    # Generar QR en base64
+    texto_qr = (
+        f"TECNICO: {participacion.tecnico.nombre_completo} | "
+        f"CEDULA: {participacion.tecnico.cedula} | "
+        f"CURSO: {participacion.curso.nombre} | "
+        f"DURACION: {participacion.curso.duracion}h | "
+        f"INSTRUCTOR: {participacion.curso.instructor} | "
+        f"FECHA: {participacion.curso.fecha_fin} | "
+        f"NOTA: {participacion.nota_final} | "
+        f"ESTADO: Aprobado | "
+        f"CODIGO: {cert.codigo}"
+    )
+    qr_img = qrcode.make(texto_qr)
+    qr_buf = io.BytesIO()
+    qr_img.save(qr_buf, format='PNG')
+    qr_b64 = base64.b64encode(qr_buf.getvalue()).decode('utf-8')
+
+    return render(request, 'certificados/certificado_unico.html', {
+        'participacion': participacion,
+        'cert': cert,
+        'qr_b64': qr_b64,
+        'url_verificacion': url_verificacion,
+        'modo': 'descargar',
+    })
 
 
 @login_required(login_url='/login/')
@@ -896,16 +911,17 @@ def verificar_certificado(request, codigo):
             'participacion__tecnico', 'participacion__curso'
         ).get(codigo=codigo)
         valido = True
+        participacion = cert.participacion
 
-        # Generar QR lado servidor
+        # Generar QR en base64
         texto_qr = (
-            f"TECNICO: {cert.participacion.tecnico.nombre_completo} | "
-            f"CEDULA: {cert.participacion.tecnico.cedula} | "
-            f"CURSO: {cert.participacion.curso.nombre} | "
-            f"DURACION: {cert.participacion.curso.duracion}h | "
-            f"INSTRUCTOR: {cert.participacion.curso.instructor} | "
-            f"FECHA: {cert.participacion.curso.fecha_fin} | "
-            f"NOTA: {cert.participacion.nota_final} | "
+            f"TECNICO: {participacion.tecnico.nombre_completo} | "
+            f"CEDULA: {participacion.tecnico.cedula} | "
+            f"CURSO: {participacion.curso.nombre} | "
+            f"DURACION: {participacion.curso.duracion}h | "
+            f"INSTRUCTOR: {participacion.curso.instructor} | "
+            f"FECHA: {participacion.curso.fecha_fin} | "
+            f"NOTA: {participacion.nota_final} | "
             f"ESTADO: Aprobado | "
             f"CODIGO: {cert.codigo}"
         )
@@ -913,17 +929,23 @@ def verificar_certificado(request, codigo):
         qr_buf = io.BytesIO()
         qr_img.save(qr_buf, format='PNG')
         qr_b64 = base64.b64encode(qr_buf.getvalue()).decode('utf-8')
+        url_verificacion = request.build_absolute_uri(f'/verificar/{cert.codigo}/')
 
     except Certificado.DoesNotExist:
-        cert   = None
-        valido = False
-        qr_b64 = None
+        cert          = None
+        participacion = None
+        valido        = False
+        qr_b64        = None
+        url_verificacion = ''
 
-    return render(request, 'certificados/verificar.html', {
+    return render(request, 'certificados/certificado_unico.html', {
         'cert': cert,
+        'participacion': participacion,
         'valido': valido,
         'codigo': codigo,
         'qr_b64': qr_b64,
+        'url_verificacion': url_verificacion,
+        'modo': 'verificar',
     })
 
 
@@ -948,7 +970,7 @@ def perfil_tecnico(request):
         especialidad  = request.POST.get('especialidad', '').strip()
         institucion   = request.POST.get('institucion', '').strip()
         ciudad        = request.POST.get('ciudad', '').strip()
-        fecha_ingreso = request.POST.get('fecha_ingreso', '').strip()
+        # fecha_ingreso NO se recibe del POST — siempre conserva el valor original
         foto          = request.FILES.get('foto', None)
 
         errores = []
@@ -977,9 +999,6 @@ def perfil_tecnico(request):
         if not ciudad or len(ciudad) < 2:
             errores.append('La ciudad debe tener al menos 2 caracteres.')
 
-        err = _validar_fecha_no_futura(fecha_ingreso)
-        if err: errores.append(err)
-
         err = _validar_foto(foto)
         if err: errores.append(err)
 
@@ -993,6 +1012,7 @@ def perfil_tecnico(request):
             for e in errores:
                 messages.error(request, e)
         else:
+            # fecha_ingreso NO se actualiza — conserva el valor original en BD
             tecnico.cedula       = cedula
             tecnico.nombres      = nombres
             tecnico.apellidos    = apellidos
@@ -1001,7 +1021,6 @@ def perfil_tecnico(request):
             tecnico.especialidad = especialidad
             tecnico.institucion  = institucion
             tecnico.ciudad       = ciudad
-            tecnico.fecha_ingreso = fecha_ingreso
             if foto:
                 tecnico.foto = foto
             tecnico.save()
@@ -1292,7 +1311,7 @@ def cursos_disponibles(request):
 # ═══════════════════════════════════════════════
 @login_required(login_url='/login/')
 def imprimir_certificado(request, pk):
-    """Genera el mismo PDF del certificado y lo muestra inline en el navegador para imprimir."""
+    """Muestra el certificado HTML para imprimir/guardar en el navegador."""
     participacion = get_object_or_404(Participacion, pk=pk)
 
     if participacion.estado != 'Aprobado':
@@ -1306,16 +1325,34 @@ def imprimir_certificado(request, pk):
         except Tecnico.DoesNotExist:
             raise Http404
 
+    import base64
     cert = _obtener_o_crear_certificado(participacion)
     url_verificacion = request.build_absolute_uri(f'/verificar/{cert.codigo}/')
 
-    # Reutiliza la misma función de generación de PDF
-    pdf_buf = _generar_pdf_certificado(participacion, cert, url_verificacion)
+    # Generar QR en base64 para el template HTML
+    texto_qr = (
+        f"TECNICO: {participacion.tecnico.nombre_completo} | "
+        f"CEDULA: {participacion.tecnico.cedula} | "
+        f"CURSO: {participacion.curso.nombre} | "
+        f"DURACION: {participacion.curso.duracion}h | "
+        f"INSTRUCTOR: {participacion.curso.instructor} | "
+        f"FECHA: {participacion.curso.fecha_fin} | "
+        f"NOTA: {participacion.nota_final} | "
+        f"ESTADO: Aprobado | "
+        f"CODIGO: {cert.codigo}"
+    )
+    qr_img = qrcode.make(texto_qr)
+    qr_buf = io.BytesIO()
+    qr_img.save(qr_buf, format='PNG')
+    qr_b64 = base64.b64encode(qr_buf.getvalue()).decode('utf-8')
 
-    response = HttpResponse(pdf_buf, content_type='application/pdf')
-    # inline = abre en el navegador (no descarga)
-    response['Content-Disposition'] = f'inline; filename="certificado_{cert.codigo}.pdf"'
-    return response
+    return render(request, 'certificados/certificado_unico.html', {
+        'participacion': participacion,
+        'cert': cert,
+        'qr_b64': qr_b64,
+        'url_verificacion': url_verificacion,
+        'modo': 'imprimir',  # activa autoprint JS
+    })
 
 
 # ═══════════════════════════════════════════════
@@ -1390,10 +1427,20 @@ def enviar_certificado_email(request, pk):
             f'Certificado enviado exitosamente al correo {correo_tecnico}.'
         )
     except Exception as e:
-        messages.error(
-            request,
-            f'No se pudo enviar el correo. Verifica la configuración del servidor de email. Error: {str(e)}'
-        )
+        error_str = str(e)
+        # Mensaje de error específico y accionable
+        if '535' in error_str or 'BadCredentials' in error_str or 'Username and Password' in error_str:
+            mensaje_error = (
+                'Error de autenticación con Gmail (535). '
+                'La contraseña de aplicación es incorrecta o expiró. '
+                'Ve a https://myaccount.google.com/apppasswords, '
+                'genera una nueva y actualiza el archivo .env (EMAIL_HOST_PASSWORD).'
+            )
+        elif 'getaddrinfo' in error_str or 'Network' in error_str or 'Connection' in error_str:
+            mensaje_error = 'No hay conexión con el servidor de correo. Verifica tu conexión a internet.'
+        else:
+            mensaje_error = f'No se pudo enviar el correo. Error: {error_str}'
+        messages.error(request, mensaje_error)
 
     # Redirigir según el perfil
     if request.user.is_staff:
